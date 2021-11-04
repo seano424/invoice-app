@@ -2,26 +2,36 @@ import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { nanoid } from 'nanoid'
 import { useSession } from 'next-auth/react'
-import { addDoc, collection, serverTimestamp } from '@firebase/firestore'
+import { TrashIcon } from '@heroicons/react/solid'
+import {
+  addDoc,
+  collection,
+  serverTimestamp,
+  setDoc,
+  updateDoc,
+  doc,
+} from '@firebase/firestore'
 import { db } from '../firebase'
 import Button from './Button'
 import Label from './Label'
-import MultipleInputs from './MultipleInputs'
 import { useRecoilState } from 'recoil'
 import { modalState } from '../atoms/modalAtom'
+import Item from './Item'
 
-function InvoiceForm({ header, invoice }) {
+function InvoiceForm({ header, invoice, type, identifier }) {
   const [loadingInvoice, setLoadingInvoice] = useState(false)
-  const [totalItems, setTotalItems] = useState([1])
-  const [trial, setTrial] = useState([null])
+
+  const [totalItems, setTotalItems] = useState([])
   const { data: session } = useSession()
   const {
     register,
     handleSubmit,
     formState: { errors },
     control,
+    setValue,
   } = useForm()
   const [open, setOpen] = useRecoilState(modalState)
+  const toEdit = type === 'edit'
 
   useEffect(() => {
     invoice && setTotalItems(invoice.items)
@@ -29,18 +39,23 @@ function InvoiceForm({ header, invoice }) {
 
   const addItems = (e) => {
     e.preventDefault()
-    setTrial([...trial, null])
-    setTotalItems([...totalItems, totalItems[totalItems.length - 1] + 1])
+    setTotalItems([
+      ...totalItems,
+      { name: '', price: '', quantity: '', total: '' },
+    ])
   }
 
   const removeItem = (idx) => {
-    const filteredItems = totalItems.filter((_, index) => index !== idx)
-    totalItems.length > 1 && setTotalItems(filteredItems)
+    console.log(idx)
+    const newItems = totalItems.filter((_, index) => index !== idx)
+    console.log(newItems)
   }
 
-  const uploadPost = async (data, status) => {
+  const uploadPost = async (data, status, invoice) => {
     if (loadingInvoice) return
     setLoadingInvoice(true)
+
+    const invoiceRef = doc(db, 'invoices', identifier)
 
     const formatter = new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -49,30 +64,36 @@ function InvoiceForm({ header, invoice }) {
 
     const updatedItems = data.items.map((item) => ({
       ...item,
-      total: formatter.format(item.price * item.qty),
+      total: formatter.format(item.price * item.quantity),
     }))
 
-    const totals = data.items.map((i) => i.price * i.qty)
+    const totals = data.items.map((i) => +i.price * +i.quantity)
+    console.log('totals', totals)
     const total = totals.reduce((a, b) => a + b, 0)
-
+    const createdAt = invoice?.createdAt ? invoice.createdAt : data.createdAt
     const invoiceData = {
       ...data,
+      createdAt,
       total: formatter.format(total),
-      paymentDue: paymentDue(data.createdAt, data.paymentTerms),
+      paymentDue: paymentDue(createdAt, data.paymentTerms),
       status,
       items: updatedItems,
-      id: nanoid(6).toUpperCase(),
+      id: invoice?.id ? invoice.id : nanoid(6).toUpperCase(),
     }
     // 1. Create an invoice and add to firestore 'invoices' collection
     // 2. Get the invoice ID for the newly created invoice
-    const docRef = await addDoc(collection(db, 'invoices'), {
-      username: session.user.username,
-      uid: session.user.uid,
+    // const docRef = await addDoc(collection(db, 'invoices'), {
+    //   username: session.user.username,
+    //   uid: session.user.uid,
+    //   invoice: invoiceData,
+    //   timestamp: serverTimestamp(),
+    // })
+    await updateDoc(invoiceRef, {
       invoice: invoiceData,
-      timestamp: serverTimestamp(),
     })
-    console.log(invoiceData)
-    console.log('new doc added with ID', docRef.id)
+
+    console.log('invoiceData', invoice)
+    // console.log('new doc added with ID', docRef.id)
     setLoadingInvoice(false)
     setOpen(false)
   }
@@ -94,8 +115,6 @@ function InvoiceForm({ header, invoice }) {
     return year + '-' + month + '-' + day
   }
 
-  console.log('totalitems:', totalItems)
-
   return (
     <>
       <main>
@@ -103,6 +122,7 @@ function InvoiceForm({ header, invoice }) {
           {header}
         </h3>
         <form className="flex flex-col" onSubmit={handleSubmit(uploadPost)}>
+          {/* SENDER DETAILS */}
           <section className="flex flex-col mb-4">
             <p className="text-purple-500 font-bold mb-4">Bill From</p>
             <Label className="text-gray-400">Street Address</Label>
@@ -145,6 +165,7 @@ function InvoiceForm({ header, invoice }) {
             />
           </section>
 
+          {/* CLIENT DETAILS */}
           <section className="flex flex-col mb-4">
             <p className="text-purple-500 font-bold mb-4">Bill To</p>
             <Label className="text-gray-400">Client's Name</Label>
@@ -203,6 +224,7 @@ function InvoiceForm({ header, invoice }) {
             />
           </section>
 
+          {/* INVOICE TERMS */}
           <section className="flex flex-col">
             <Label>Invoice Date</Label>
             <input
@@ -230,25 +252,24 @@ function InvoiceForm({ header, invoice }) {
             />
           </section>
 
+          {/* ITEMS LIST */}
           <section className="my-8">
             <h3 className="text-gray-400 text-xl font-semibold tracking-wide mb-4">
               Item List
             </h3>
-            {totalItems.map((i, idx) => (
-              <MultipleInputs
+            {totalItems.map((item, idx) => (
+              <Item
+                item={item}
                 key={idx}
+                register={register}
                 idx={idx}
-                control={control}
-                removeItem={() => removeItem(idx)}
-                item={i}
-                name={i.name}
-                price={i.price}
-                total={i.total}
-                quantity={i.quantity}
+                removeItem={removeItem}
               />
             ))}
+            {/* <Item register={register} idx={1} removeItem={removeItem} /> */}
+
             <button
-              onClick={(e) => addItems(e)}
+              onClick={addItems}
               className="bg-purple-50 text-purple-400 w-full p-2 rounded font-semibold transition hover:text-purple-500"
             >
               + Add New Item
@@ -256,6 +277,8 @@ function InvoiceForm({ header, invoice }) {
           </section>
         </form>
       </main>
+
+      {/* FOOTER WITH BUTTONS */}
       <footer className="flex items-center justify-center w-full h-24 bg-white gap-3">
         <div onClick={() => setOpen(false)}>
           <Button
@@ -264,14 +287,18 @@ function InvoiceForm({ header, invoice }) {
             bgColor="bg-gray-50"
           />
         </div>
-        <div onClick={handleSubmit((data) => uploadPost(data, 'draft'))}>
+        <div
+          onClick={handleSubmit((data) => uploadPost(data, 'draft', invoice))}
+        >
           <Button
             text="Save as Draft"
             textColor="text-gray-400"
             bgColor="bg-gray-800"
           />
         </div>
-        <div onClick={handleSubmit((data) => uploadPost(data, 'pending'))}>
+        <div
+          onClick={handleSubmit((data) => uploadPost(data, 'pending', invoice))}
+        >
           <Button
             text="Save & Send"
             textColor="text-white"
