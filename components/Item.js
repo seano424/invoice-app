@@ -1,57 +1,83 @@
-import { useForm, useController, Controller } from 'react-hook-form'
+import { useState, useEffect } from 'react'
 import Label from './Label'
 import { TrashIcon } from '@heroicons/react/solid'
-import { useState } from 'react'
 
-function Item() {
-  const { type = 'text', label } = props
-  const { register, control } = useForm()
-  const { field, meta } = useController(props)
+function Item({ register, idx, removeItem, item }) {
+  const [price, setPrice] = useState(item.price)
+  const [quantity, setQuantity] = useState(item.quantity)
+  const [total, setTotal] = useState(item.total)
+  const [name, setName] = useState(item.name)
 
-  const [price, setPrice] = useState(0)
-  const [value, setValue] = useState('')
-  const [qty, setQty] = useState(0)
   const formatter = new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
   })
-  const total = formatter.format(price * qty)
+  // formatter.format(price * quantity)
+
+  useEffect(() => {
+    item && setPrice(item.price)
+  }, [])
+
+  const handleQuantityChange = (e) => {
+    setQuantity(e.target.value)
+    setTotal(e.target.value * price)
+  }
+
+  const handlePriceChange = (e) => {
+    setPrice(e.target.value)
+    setTotal(e.target.value * quantity)
+  }
 
   return (
     <div>
       <Label>Item Name</Label>
-
-      <div className="flex items-center space-x-4">
+      <input
+        defaultValue={name}
+        {...register(`items.${idx}.name`)}
+        className="input"
+        name={`items.${idx}.name`}
+      />
+      <div className="flex items-center space-x-3">
         <div>
           <Label>Qty</Label>
           <input
-            type="number"
-            onInput={(e) => setQty(e.target.value)}
+            min={0}
+            defaultValue={quantity}
+            {...register(`items.${idx}.quantity`)}
             className="input"
-            {...register('quantity')}
+            type="number"
+            name={`items.${idx}.quantity`}
+            onInput={(e) => handleQuantityChange(e)}
           />
         </div>
         <div>
           <Label>Price</Label>
           <input
-            type="number"
-            onInput={(e) => setPrice(e.target.value)}
+            min={0}
+            onInput={(e) => handlePriceChange(e)}
+            defaultValue={price}
+            {...register(`items.${idx}.price`)}
             className="input"
-            {...register('price')}
+            type="number"
+            name={`items.${idx}.price`}
           />
         </div>
         <div>
           <Label>Total</Label>
           <input
-            type="text"
-            className="input border-none text-gray-400"
             disabled
-            value={total}
+            // value={total}
+            placeholder={formatter.format(total)}
+            {...register(`items.${idx}.total`)}
+            className="input border-none text-gray-400"
+            type="number"
+            name={`items.${idx}.total`}
           />
         </div>
-        <div>
-          <TrashIcon className="h-6 w-6" />
-        </div>
+        <TrashIcon
+          onClick={() => removeItem(idx)}
+          className="h-10 w-10 pt-5 cursor-pointer transition hover:scale-110 hover:text-red-400"
+        />
       </div>
     </div>
   )

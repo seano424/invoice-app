@@ -2,18 +2,25 @@ import { useRecoilState } from 'recoil'
 import { modalState, pageState } from '../atoms/modalAtom'
 import InvoiceForm from './InvoiceForm'
 
-function Invoice(invoice) {
+function Invoice(invoice, identifier) {
   const [_, setOpen] = useRecoilState(modalState)
   const [page, setPage] = useRecoilState(pageState)
-  const { id, clientName, paymentDue, total, status } = invoice
+  const { id, clientName, paymentDue, total, status } = invoice.invoice
   const pending = status === 'pending'
   const paid = status === 'paid'
   const draft = status === 'draft'
   const handleEdit = () => {
-    console.log(invoice)
-    setPage(<InvoiceForm header="Edit Invoice" invoice={invoice} />)
+    setPage(
+      <InvoiceForm
+        type="edit"
+        header="Edit Invoice"
+        invoice={invoice.invoice}
+        identifier={invoice.identifier}
+      />
+    )
     setOpen(true)
   }
+
   return (
     <>
       <div

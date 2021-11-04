@@ -1,5 +1,12 @@
 import { useRecoilState } from 'recoil'
-import { collection, onSnapshot, orderBy, query } from '@firebase/firestore'
+import {
+  collection,
+  onSnapshot,
+  orderBy,
+  query,
+  getDocs,
+  doc,
+} from '@firebase/firestore'
 import { ChevronDownIcon, PlusIcon } from '@heroicons/react/solid'
 import { useState, useEffect } from 'react'
 import { signIn, useSession } from 'next-auth/react'
@@ -24,14 +31,16 @@ function Invoices() {
   )
 
   const handleNew = () => {
-    setPage(<InvoiceForm header="New Invoice" />)
+    setPage(<InvoiceForm type="new" header="New Invoice" />)
     setOpen(true)
   }
+
+  // console.log(invoices.map((i) => i.id))
 
   return (
     <>
       <Modal form={page} />
-      <main className="max-w-xs md:max-w-3xl mx-auto">
+      <main className="max-w-xs md:max-w-3xl mx-auto pt-[4.5rem]">
         {/* Top Part */}
         <section className="flex justify-between my-4">
           <div>
@@ -63,7 +72,12 @@ function Invoices() {
         {/* Individual invoices */}
         <section>
           {invoices?.map((invoice) => (
-            <Invoice key={invoice.id} {...invoice.data().invoice} />
+            // <h1>{invoice.id}</h1>
+            <Invoice
+              key={invoice.id}
+              identifier={invoice.id}
+              invoice={invoice.data().invoice}
+            />
           ))}
         </section>
       </main>

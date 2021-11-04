@@ -6,7 +6,7 @@ function Header() {
   const { data: session } = useSession()
   const router = useRouter()
   return (
-    <div className="bg-gray-700 w-full pr-4">
+    <div className="bg-gray-700 w-full pr-4 fixed top-0">
       <ul className="flex justify-between items-center">
         {/* Left Side - Logo */}
         <div>
