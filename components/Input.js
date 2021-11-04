@@ -7,6 +7,8 @@ export default function Input({
   total,
   type = 'text',
   onInput,
+  defaultValue,
+  placeholder,
 }) {
   const {
     field: { ref, ...inputProps },
@@ -16,15 +18,16 @@ export default function Input({
     name,
     control,
     rules: { required: false },
-    defaultValue: '',
+    defaultValue,
   })
 
   return (
     <input
       min="0"
+      defaultValue={defaultValue}
       disabled={total}
       onInput={onInput}
-      placeholder={total}
+      placeholder={placeholder ? placeholder : defaultValue}
       type={type}
       className={`input ${className}`}
       {...inputProps}

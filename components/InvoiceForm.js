@@ -1,16 +1,16 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { nanoid } from 'nanoid'
 import { useSession } from 'next-auth/react'
 import { addDoc, collection, serverTimestamp } from '@firebase/firestore'
 import { db } from '../firebase'
-import Header from '../components/Header'
-import Button from '../components/Button'
-import Label from '../components/Label'
-import MultipleInputs from '../components/MultipleInputs'
-import { stringify } from '@firebase/util'
+import Button from './Button'
+import Label from './Label'
+import MultipleInputs from './MultipleInputs'
+import { useRecoilState } from 'recoil'
+import { modalState } from '../atoms/modalAtom'
 
-function NewInvoice() {
+function InvoiceForm({ header, invoice }) {
   const [loadingInvoice, setLoadingInvoice] = useState(false)
   const [totalItems, setTotalItems] = useState([1])
   const [trial, setTrial] = useState([null])
@@ -21,6 +21,11 @@ function NewInvoice() {
     formState: { errors },
     control,
   } = useForm()
+  const [open, setOpen] = useRecoilState(modalState)
+
+  useEffect(() => {
+    invoice && setTotalItems(invoice.items)
+  }, [])
 
   const addItems = (e) => {
     e.preventDefault()
@@ -33,7 +38,7 @@ function NewInvoice() {
     totalItems.length > 1 && setTotalItems(filteredItems)
   }
 
-  const uploadPost = async (data) => {
+  const uploadPost = async (data, status) => {
     if (loadingInvoice) return
     setLoadingInvoice(true)
 
@@ -54,7 +59,7 @@ function NewInvoice() {
       ...data,
       total: formatter.format(total),
       paymentDue: paymentDue(data.createdAt, data.paymentTerms),
-      status: 'pending',
+      status,
       items: updatedItems,
       id: nanoid(6).toUpperCase(),
     }
@@ -69,10 +74,7 @@ function NewInvoice() {
     console.log(invoiceData)
     console.log('new doc added with ID', docRef.id)
     setLoadingInvoice(false)
-  }
-
-  const onSubmit = async (data) => {
-    await uploadPost(data)
+    setOpen(false)
   }
 
   const paymentDue = (createdAt, paymentTerms) => {
@@ -92,22 +94,24 @@ function NewInvoice() {
     return year + '-' + month + '-' + day
   }
 
-  return (
-    <div>
-      <Header />
-      <main className="max-w-sm sm:max-w-xl xl:max-w-6xl mx-auto">
-        <h1 className="text-2xl font-semibold my-4">
-          Edit <span className="text-gray-400">#</span>
-          someidnumber
-        </h1>
+  console.log('totalitems:', totalItems)
 
-        <form className="flex flex-col " onSubmit={handleSubmit(onSubmit)}>
+  return (
+    <>
+      <main>
+        <h3 className="text-2xl font-semibold leading-6 text-gray-900 flex flex-col mb-6">
+          {header}
+        </h3>
+        <form className="flex flex-col" onSubmit={handleSubmit(uploadPost)}>
           <section className="flex flex-col mb-4">
             <p className="text-purple-500 font-bold mb-4">Bill From</p>
             <Label className="text-gray-400">Street Address</Label>
             <input
+              defaultValue={
+                invoice ? invoice.senderAddress.street : '19 Union Terrace'
+              }
               className="input"
-              {...register('senderAddress.senderStreetAddress', {
+              {...register('senderAddress.street', {
                 required: false,
               })}
             />
@@ -117,22 +121,27 @@ function NewInvoice() {
               <div>
                 <Label>City</Label>
                 <input
+                  defaultValue={invoice ? invoice.senderAddress.city : 'Oaxaca'}
                   className="input"
-                  {...register('senderAddress.senderCity')}
+                  {...register('senderAddress.city')}
                 />
               </div>
               <div>
                 <Label>Post Code</Label>
                 <input
+                  defaultValue={
+                    invoice ? invoice.senderAddress.postCode : '66708'
+                  }
                   className="input"
-                  {...register('senderAddress.senderPostCode')}
+                  {...register('senderAddress.postCode')}
                 />
               </div>
             </div>
             <Label>Country</Label>
             <input
+              defaultValue={invoice ? invoice.senderAddress.country : 'Mexico'}
               className="input"
-              {...register('senderAddress.senderCountry')}
+              {...register('senderAddress.country')}
             />
           </section>
 
@@ -140,18 +149,25 @@ function NewInvoice() {
             <p className="text-purple-500 font-bold mb-4">Bill To</p>
             <Label className="text-gray-400">Client's Name</Label>
             <input
+              defaultValue={invoice ? invoice.clientName : "Sean O'Reilly"}
               className="input"
               {...register('clientName', { required: false })}
             />
             <Label className="text-gray-400">Client's Email</Label>
             <input
+              defaultValue={
+                invoice ? invoice.clientEmail : 'soreilly424@gmail.com'
+              }
               className="input"
               {...register('clientEmail', { required: false })}
             />
             <Label className="text-gray-400">Street Address</Label>
             <input
+              defaultValue={
+                invoice ? invoice.clientAddress.street : '46 Abbey Row'
+              }
               className="input"
-              {...register('clientAddress.clientStreetAddress', {
+              {...register('clientAddress.street', {
                 required: false,
               })}
             />
@@ -161,49 +177,74 @@ function NewInvoice() {
               <div>
                 <Label>City</Label>
                 <input
+                  defaultValue={
+                    invoice ? invoice.clientAddress.city : 'Kansas City'
+                  }
                   className="input"
-                  {...register('clientAddress.clientCity')}
+                  {...register('clientAddress.city')}
                 />
               </div>
               <div>
                 <Label>Post Code</Label>
                 <input
+                  defaultValue={
+                    invoice ? invoice.clientAddress.postCode : '66030'
+                  }
                   className="input"
-                  {...register('clientAddress.clientPostCode')}
+                  {...register('clientAddress.postCode')}
                 />
               </div>
             </div>
             <Label>Country</Label>
             <input
+              defaultValue={invoice ? invoice.clientAddress.country : 'USA'}
               className="input"
-              {...register('clientAddress.clientCountry')}
+              {...register('clientAddress.country')}
             />
           </section>
 
           <section className="flex flex-col">
             <Label>Invoice Date</Label>
-            <input type="date" className="input" {...register('createdAt')} />
+            <input
+              defaultValue={invoice ? invoice.createdAt : '1989-10-07'}
+              type="date"
+              className="input"
+              {...register('createdAt')}
+            />
             <Label>Payment Terms</Label>
 
-            <select className="input" {...register('paymentTerms')}>
+            <select
+              defaultValue={invoice ? invoice.paymentTerms : '19 Union Terrace'}
+              className="input"
+              {...register('paymentTerms')}
+            >
               <option value="15">Net 15 days</option>
               <option value="30">Net 30 days</option>
               <option value="60">Net 60 days</option>
             </select>
             <Label>Project Description</Label>
-            <input className="input " {...register('description')} />
+            <input
+              defaultValue={invoice ? invoice.description : 'Graphic Design'}
+              className="input "
+              {...register('description')}
+            />
           </section>
 
           <section className="my-8">
             <h3 className="text-gray-400 text-xl font-semibold tracking-wide mb-4">
               Item List
             </h3>
-            {totalItems.map((_, index) => (
+            {totalItems.map((i, idx) => (
               <MultipleInputs
-                removeItem={() => removeItem(index)}
-                key={index}
+                key={idx}
+                idx={idx}
                 control={control}
-                idx={index}
+                removeItem={() => removeItem(idx)}
+                item={i}
+                name={i.name}
+                price={i.price}
+                total={i.total}
+                quantity={i.quantity}
               />
             ))}
             <button
@@ -216,13 +257,21 @@ function NewInvoice() {
         </form>
       </main>
       <footer className="flex items-center justify-center w-full h-24 bg-white gap-3">
-        <Button text="Discard" textColor="text-gray-500" bgColor="bg-gray-50" />
-        <Button
-          text="Save as Draft"
-          textColor="text-gray-400"
-          bgColor="bg-gray-800"
-        />
-        <div onClick={handleSubmit(onSubmit)}>
+        <div onClick={() => setOpen(false)}>
+          <Button
+            text="Discard"
+            textColor="text-gray-500"
+            bgColor="bg-gray-50"
+          />
+        </div>
+        <div onClick={handleSubmit((data) => uploadPost(data, 'draft'))}>
+          <Button
+            text="Save as Draft"
+            textColor="text-gray-400"
+            bgColor="bg-gray-800"
+          />
+        </div>
+        <div onClick={handleSubmit((data) => uploadPost(data, 'pending'))}>
           <Button
             text="Save & Send"
             textColor="text-white"
@@ -230,8 +279,8 @@ function NewInvoice() {
           />
         </div>
       </footer>
-    </div>
+    </>
   )
 }
 
-export default NewInvoice
+export default InvoiceForm
