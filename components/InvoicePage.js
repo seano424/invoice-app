@@ -142,11 +142,16 @@ function InvoicePage({ invoice, identifier: id }) {
                       {item.name}
                     </h3>
                     <p className="font-semibold">
-                      {item.quantity} x {formatter.format(item.price)}{' '}
+                      {item.quantity} x{' '}
+                      {typeof item.price === 'number'
+                        ? formatter.format(item.price)
+                        : total}
                     </p>
                   </div>
                   <h3 className="text-black font-semibold">
-                    {formatter.format(item.total)}
+                    {typeof item.total === 'number'
+                      ? formatter.format(item.total)
+                      : total}
                   </h3>
                 </div>
               ))}
@@ -154,7 +159,7 @@ function InvoicePage({ invoice, identifier: id }) {
             <div className="flex items-center justify-between bg-gray-900 rounded-b-lg p-4">
               <p className=" text-gray-200">Grand Total</p>
               <h1 className="text-2xl text-white font-bold">
-                {formatter.format(total)}
+                {typeof total === 'number' ? formatter.format(total) : total}
               </h1>
             </div>
           </section>
