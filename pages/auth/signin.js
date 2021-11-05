@@ -7,11 +7,10 @@ export default function SignIn({ providers }) {
       <Header />
 
       <div className="flex flex-col items-center justify-center min-h-screen py-2 -mt-24 text-center">
-        <img
-          src="https://www.instagram.com/static/images/web/mobile_nav_type_logo-2x.png/1b47f9d0e595.png"
-          alt="Instagram"
-        />
-        <p className="font-xs italic">This is not a REAL app. It is a clone.</p>
+        <h1 className="text-5xl font-black uppercase text-primary">Starling</h1>
+        <p className="font-xs italic">
+          Your personal invoice app. Keep track of your business.
+        </p>
         <div className="mt-40">
           {Object.values(providers).map((provider) => (
             <div key={provider.name}>

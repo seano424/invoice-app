@@ -54,7 +54,7 @@ function Header() {
         {/* Right Side - Dark Mode and User */}
         <div className="flex items-center divide-secondary-purple space-x-2">
           <div className="cursor-pointer">
-            <MoonIcon className="h-10 w-10 text-purple-300" />
+            <MoonIcon className="h-10 w-10 text-secondary" />
           </div>
           <div className="bg-secondary-text w-[.01rem] h-[4.5rem]" />
           {session ? (

@@ -51,7 +51,7 @@ export default function Modal({ header, page }) {
                   className="px-4 pt-4 cursor-pointer flex items-center space-x-4"
                 >
                   {' '}
-                  <ChevronLeftIcon className="h-4 w-4 text-purple-500" />
+                  <ChevronLeftIcon className="h-4 w-4 text-primary" />
                   <h4 className="font-bold text-xs">Go back</h4>
                 </div>
                 <Dialog.Title

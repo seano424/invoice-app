@@ -56,7 +56,7 @@ function Invoices() {
             <div onClick={() => !session && signIn()}>
               <button
                 onClick={handleNew}
-                className="flex space-x-2 items-center bg-purple-500 p-2 rounded-full cursor-pointer"
+                className="flex space-x-2 items-center bg-primary p-2 rounded-full cursor-pointer"
               >
                 <span className="bg-white flex items-center justify-center w-8 h-8 rounded-full">
                   <PlusIcon />

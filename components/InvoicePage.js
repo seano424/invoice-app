@@ -3,9 +3,11 @@ import moment from 'moment'
 import { formatter } from '../lib/helpers'
 import Button from './Button'
 import { modalState, pageState, destroyModalState } from '../atoms/modalAtom'
-import { useRecoilState } from 'recoil'
+import { useRecoilState, useSetRecoilState } from 'recoil'
 import InvoiceForm from './InvoiceForm'
 import DeleteModal from './DeleteModal'
+import { updateDoc, doc } from '@firebase/firestore'
+import { db } from '../firebase'
 
 function InvoicePage({ invoice, identifier: id }) {
   const {
@@ -21,9 +23,9 @@ function InvoicePage({ invoice, identifier: id }) {
     status,
     total,
   } = invoice
-  const [open, setOpen] = useRecoilState(modalState)
-  const [openDestroy, setOpenDestroy] = useRecoilState(destroyModalState)
-  const [page, setPage] = useRecoilState(pageState)
+  const setOpen = useSetRecoilState(modalState)
+  const setOpenDestroy = useSetRecoilState(destroyModalState)
+  const setPage = useSetRecoilState(pageState)
 
   const handleEdit = () => {
     setPage(
@@ -41,6 +43,24 @@ function InvoicePage({ invoice, identifier: id }) {
     setOpenDestroy(true)
   }
 
+  const handleMarkAsPaid = async (invoice) => {
+    const invoiceRef = doc(db, 'invoices', id)
+
+    const invoiceData = {
+      ...invoice,
+      status: 'paid',
+    }
+
+    console.log('invoiceData:', invoiceData)
+
+    const docRef = await updateDoc(invoiceRef, {
+      invoice: invoiceData,
+    })
+
+    console.log('new doc updated', docRef)
+    setOpen(false)
+  }
+
   const formattedPaymentDue = moment(paymentDue, 'DD-MM-YYYY').format(
     'DD MMM YYYY'
   )
@@ -48,10 +68,12 @@ function InvoicePage({ invoice, identifier: id }) {
     'DD MMM YYYY'
   )
 
+  console.log(invoice)
+
   return (
     <>
       <DeleteModal invoice={invoice} id={id} />
-      <main className="text-purple-400 font-light p-6">
+      <main className="text-secondary font-light p-6">
         {/* Status Card */}
         <div className="flex justify-between items-center bg-white p-5 rounded-lg shadow-sm">
           <p className="text-gray-400">Status</p>
@@ -145,11 +167,11 @@ function InvoicePage({ invoice, identifier: id }) {
         <div onClick={openDestroyModal}>
           <Button text="Delete" textColor="text-white" bgColor="bg-red-500" />
         </div>
-        <div>
+        <div onClick={() => handleMarkAsPaid(invoice)}>
           <Button
             text="Mark as Paid"
             textColor="text-white"
-            bgColor="bg-purple-500"
+            bgColor="bg-primary"
           />
         </div>
       </footer>
