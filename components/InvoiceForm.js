@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { nanoid } from 'nanoid'
 import { useSession } from 'next-auth/react'
-import { TrashIcon } from '@heroicons/react/solid'
 import {
   addDoc,
   collection,
@@ -20,7 +19,6 @@ import Item from './Item'
 
 function InvoiceForm({ header, invoice, type, identifier }) {
   const [loadingInvoice, setLoadingInvoice] = useState(false)
-
   const [totalItems, setTotalItems] = useState([])
   const { data: session } = useSession()
   const {
@@ -32,10 +30,11 @@ function InvoiceForm({ header, invoice, type, identifier }) {
   } = useForm()
   const [open, setOpen] = useRecoilState(modalState)
   const toEdit = type === 'edit'
-
   useEffect(() => {
     invoice && setTotalItems(invoice.items)
   }, [])
+
+  console.log(invoice)
 
   const addItems = (e) => {
     e.preventDefault()
@@ -61,14 +60,13 @@ function InvoiceForm({ header, invoice, type, identifier }) {
       style: 'currency',
       currency: 'USD',
     })
-
+    console.log('data', data, 'invoice', invoice)
     const updatedItems = data.items.map((item) => ({
       ...item,
       total: formatter.format(item.price * item.quantity),
     }))
 
     const totals = data.items.map((i) => +i.price * +i.quantity)
-    console.log('totals', totals)
     const total = totals.reduce((a, b) => a + b, 0)
     const createdAt = invoice?.createdAt ? invoice.createdAt : data.createdAt
     const invoiceData = {
@@ -82,17 +80,20 @@ function InvoiceForm({ header, invoice, type, identifier }) {
     }
     // 1. Create an invoice and add to firestore 'invoices' collection
     // 2. Get the invoice ID for the newly created invoice
-    // const docRef = await addDoc(collection(db, 'invoices'), {
-    //   username: session.user.username,
-    //   uid: session.user.uid,
-    //   invoice: invoiceData,
-    //   timestamp: serverTimestamp(),
-    // })
-    await updateDoc(invoiceRef, {
-      invoice: invoiceData,
-    })
+    !toEdit &&
+      (await addDoc(collection(db, 'invoices'), {
+        username: session.user.username,
+        uid: session.user.uid,
+        invoice: invoiceData,
+        timestamp: serverTimestamp(),
+      }))
 
-    console.log('invoiceData', invoice)
+    toEdit &&
+      (await updateDoc(invoiceRef, {
+        invoice: invoiceData,
+      }))
+
+    // console.log('invoiceData', invoice)
     // console.log('new doc added with ID', docRef.id)
     setLoadingInvoice(false)
     setOpen(false)
@@ -102,7 +103,6 @@ function InvoiceForm({ header, invoice, type, identifier }) {
     const dateArray = createdAt.split('-')
     const dateString = dateArray.join(',')
     const date = new Date(dateString)
-    console.log(date)
 
     const addedDate = new Date(
       date.getTime() + +paymentTerms * 24 * 60 * 60 * 1000
@@ -117,7 +117,7 @@ function InvoiceForm({ header, invoice, type, identifier }) {
 
   return (
     <>
-      <main>
+      <main className="p-6">
         <h3 className="text-2xl font-semibold leading-6 text-gray-900 flex flex-col mb-6">
           {header}
         </h3>
@@ -266,8 +266,6 @@ function InvoiceForm({ header, invoice, type, identifier }) {
                 removeItem={removeItem}
               />
             ))}
-            {/* <Item register={register} idx={1} removeItem={removeItem} /> */}
-
             <button
               onClick={addItems}
               className="bg-purple-50 text-purple-400 w-full p-2 rounded font-semibold transition hover:text-purple-500"
@@ -280,31 +278,60 @@ function InvoiceForm({ header, invoice, type, identifier }) {
 
       {/* FOOTER WITH BUTTONS */}
       <footer className="flex items-center justify-center w-full h-24 bg-white gap-3">
-        <div onClick={() => setOpen(false)}>
-          <Button
-            text="Discard"
-            textColor="text-gray-500"
-            bgColor="bg-gray-50"
-          />
-        </div>
-        <div
-          onClick={handleSubmit((data) => uploadPost(data, 'draft', invoice))}
-        >
-          <Button
-            text="Save as Draft"
-            textColor="text-gray-400"
-            bgColor="bg-gray-800"
-          />
-        </div>
-        <div
-          onClick={handleSubmit((data) => uploadPost(data, 'pending', invoice))}
-        >
-          <Button
-            text="Save & Send"
-            textColor="text-white"
-            bgColor="bg-purple-500"
-          />
-        </div>
+        {toEdit ? (
+          <>
+            <div onClick={() => setOpen(false)}>
+              <Button
+                text="Cancel"
+                textColor="text-purple-500"
+                bgColor="bg-gray-50"
+              />
+            </div>
+            <div
+              onClick={handleSubmit((data) =>
+                uploadPost(data, 'pending', invoice)
+              )}
+            >
+              <Button
+                text="Save Changes"
+                textColor="text-white"
+                bgColor="bg-purple-500"
+              />
+            </div>
+          </>
+        ) : (
+          <>
+            <div onClick={() => setOpen(false)}>
+              <Button
+                text="Discard"
+                textColor="text-gray-500"
+                bgColor="bg-gray-50"
+              />
+            </div>
+            <div
+              onClick={handleSubmit((data) =>
+                uploadPost(data, 'draft', invoice)
+              )}
+            >
+              <Button
+                text="Save as Draft"
+                textColor="text-gray-400"
+                bgColor="bg-gray-800"
+              />
+            </div>
+            <div
+              onClick={handleSubmit((data) =>
+                uploadPost(data, 'pending', invoice)
+              )}
+            >
+              <Button
+                text="Save & Send"
+                textColor="text-white"
+                bgColor="bg-purple-500"
+              />
+            </div>
+          </>
+        )}
       </footer>
     </>
   )

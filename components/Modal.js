@@ -2,8 +2,9 @@ import { Dialog, Transition } from '@headlessui/react'
 import { Fragment } from 'react'
 import { useRecoilState } from 'recoil'
 import { modalState } from '../atoms/modalAtom'
+import { ChevronLeftIcon } from '@heroicons/react/solid'
 
-export default function Modal({ header, form }) {
+export default function Modal({ header, page }) {
   const [open, setOpen] = useRecoilState(modalState)
 
   function closeModal() {
@@ -11,7 +12,7 @@ export default function Modal({ header, form }) {
   }
 
   return (
-    <>
+    <div>
       <Transition appear show={open} as={Fragment}>
         <Dialog
           as="div"
@@ -24,11 +25,11 @@ export default function Modal({ header, form }) {
               enter="ease-out duration-300"
               enterFrom="opacity-0"
               enterTo="opacity-100"
-              leave="ease-in duration-200"
+              leave="ease-in duration-100"
               leaveFrom="opacity-100"
               leaveTo="opacity-0"
             >
-              <Dialog.Overlay className="fixed inset-0" />
+              <Dialog.Overlay className="fixed inset-0 bg-black opacity-70" />
             </Transition.Child>
 
             {/* This element is to trick the browser into centering the modal contents. */}
@@ -44,14 +45,22 @@ export default function Modal({ header, form }) {
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <div className="inline-block w-full p-6 overflow-y-scroll h-screen text-left transition-all transform bg-white shadow-xl">
+              <div className="inline-block w-full overflow-y-scroll h-screen text-left transition-all transform bg-gray-50 shadow-xl">
+                <div
+                  onClick={closeModal}
+                  className="px-4 pt-4 cursor-pointer flex items-center space-x-4"
+                >
+                  {' '}
+                  <ChevronLeftIcon className="h-4 w-4 text-purple-500" />
+                  <h4 className="font-bold text-xs">Go back</h4>
+                </div>
                 <Dialog.Title
                   as="h3"
-                  className="text-2xl font-semibold leading-6 text-gray-900 flex flex-col "
+                  className="text-2xl font-semibold leading-6 text-gray-900 flex flex-col"
                 >
                   {header}
                 </Dialog.Title>
-                <div className="mt-2 ">{form}</div>
+                <div>{page}</div>
 
                 <div className="mt-4 ">
                   <button
@@ -67,6 +76,6 @@ export default function Modal({ header, form }) {
           </div>
         </Dialog>
       </Transition>
-    </>
+    </div>
   )
 }

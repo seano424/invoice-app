@@ -6,6 +6,11 @@ export const modalState = atom({
   default: false,
 })
 
+export const destroyModalState = atom({
+  key: 'destroyModalState',
+  default: false,
+})
+
 export const pageState = atom({
   key: 'pageState',
   default: <NewInvoice />,

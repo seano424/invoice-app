@@ -10,7 +10,7 @@ import {
 import { ChevronDownIcon, PlusIcon } from '@heroicons/react/solid'
 import { useState, useEffect } from 'react'
 import { signIn, useSession } from 'next-auth/react'
-import Invoice from './Invoice'
+import InvoiceCard from './InvoiceCard'
 import { db } from '../firebase'
 import { modalState, pageState } from '../atoms/modalAtom'
 import Modal from './Modal'
@@ -35,11 +35,9 @@ function Invoices() {
     setOpen(true)
   }
 
-  // console.log(invoices.map((i) => i.id))
-
   return (
     <>
-      <Modal form={page} />
+      <Modal page={page} />
       <main className="max-w-xs md:max-w-3xl mx-auto pt-[4.5rem]">
         {/* Top Part */}
         <section className="flex justify-between my-4">
@@ -73,7 +71,7 @@ function Invoices() {
         <section>
           {invoices?.map((invoice) => (
             // <h1>{invoice.id}</h1>
-            <Invoice
+            <InvoiceCard
               key={invoice.id}
               identifier={invoice.id}
               invoice={invoice.data().invoice}
