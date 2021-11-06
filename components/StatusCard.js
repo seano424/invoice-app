@@ -8,7 +8,7 @@ function StatusCard({ status }) {
         paid && 'bg-green-50'
       } ${pending && 'bg-yellow-50'} ${
         draft && 'bg-gray-50'
-      } bg-opacity-90 rounded-lg px-4 py-2`}
+      } bg-opacity-90 rounded-lg px-4 py-2 dark:bg-dark2`}
     >
       <div
         className={`${paid && 'bg-green-400'} ${

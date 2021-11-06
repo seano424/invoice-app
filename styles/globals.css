@@ -5,6 +5,6 @@
 
 @layer components {
   .input {
-    @apply border p-2 border-gray-200 rounded focus:ring-black focus:border-black outline-none my-2 w-full;
+    @apply border p-2 border-gray-200 rounded focus:ring-black focus:border-black outline-none my-6 w-full dark:bg-dark border-none;
   }
 }

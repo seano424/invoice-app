@@ -1,10 +1,13 @@
-import { MoonIcon } from '@heroicons/react/solid'
+import { MoonIcon, SunIcon } from '@heroicons/react/solid'
 import { useRouter } from 'next/dist/client/router'
 import { signIn, useSession, signOut } from 'next-auth/react'
+import { useTheme } from 'next-themes'
 
 function Header() {
   const { data: session } = useSession()
   const router = useRouter()
+  const { theme, setTheme } = useTheme()
+
   return (
     <div className="bg-gray-700 w-full pr-4 fixed top-0">
       <ul className="flex justify-between items-center">
@@ -53,8 +56,15 @@ function Header() {
 
         {/* Right Side - Dark Mode and User */}
         <div className="flex items-center divide-secondary-purple space-x-2">
-          <div className="cursor-pointer">
-            <MoonIcon className="h-10 w-10 text-secondary" />
+          <div
+            onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+            className="cursor-pointer"
+          >
+            {theme === 'light' ? (
+              <MoonIcon className="w-7 text-secondary" />
+            ) : (
+              <SunIcon className="w-7 text-secondary" />
+            )}
           </div>
           <div className="bg-secondary-text w-[.01rem] h-[4.5rem]" />
           {session ? (

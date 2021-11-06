@@ -137,7 +137,7 @@ function InvoiceForm({ header, invoice, type, identifier }) {
   return (
     <>
       <main className="p-6">
-        <h3 className="text-2xl font-semibold leading-6 text-gray-900 flex flex-col mb-6">
+        <h3 className="text-2xl font-semibold leading-6 text-gray-900 dark:text-white flex flex-col mb-6">
           {header}
         </h3>
         <form className="flex flex-col" onSubmit={handleSubmit(onSubmit)}>
@@ -287,7 +287,7 @@ function InvoiceForm({ header, invoice, type, identifier }) {
             ))}
             <button
               onClick={addItems}
-              className="bg-purple-50 text-secondary w-full p-2 rounded font-semibold transition hover:text-primary"
+              className="bg-purple-50 text-secondary hover:text-primary dark:bg-dark dark:text-gray-400 dark:hover:text-white w-full p-2 rounded-full font-semibold transition"
             >
               + Add New Item
             </button>
@@ -296,14 +296,14 @@ function InvoiceForm({ header, invoice, type, identifier }) {
       </main>
 
       {/* FOOTER WITH BUTTONS */}
-      <footer className="flex items-center justify-center w-full h-24 bg-white gap-3">
+      <footer className="flex items-center justify-center w-full h-24 bg-white dark:bg-dark gap-3">
         {toEdit ? (
           <>
             <div onClick={() => setOpen(false)}>
               <Button
                 text="Cancel"
                 textColor="text-primary"
-                bgColor="bg-gray-50"
+                bgColor="bg-gray-50 dark:bg-dark2 dark:text-gray-200"
               />
             </div>
             <div

@@ -45,8 +45,6 @@ function Invoices() {
       )
   }, [db, session])
 
-  console.log('userInvoices1', userInvoices)
-
   // useEffect(
   //   () =>
   //     onSnapshot(query(collection(db, 'invoices')), (snapshot) => {
@@ -83,8 +81,8 @@ function Invoices() {
                 onClick={handleNew}
                 className="flex space-x-2 items-center bg-primary p-2 rounded-full cursor-pointer"
               >
-                <span className="bg-white flex items-center justify-center w-8 h-8 rounded-full">
-                  <PlusIcon />
+                <span className="bg-white  flex items-center justify-center w-8 h-8 rounded-full">
+                  <PlusIcon className="dark:text-black" />
                 </span>
                 <span className="text-white">New</span>
               </button>

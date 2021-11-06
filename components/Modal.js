@@ -45,7 +45,7 @@ export default function Modal({ header, page }) {
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <div className="inline-block w-full overflow-y-scroll h-screen text-left transition-all transform bg-gray-50 shadow-xl">
+              <div className="inline-block w-full overflow-y-scroll h-screen text-left transition-all transform bg-gray-50 dark:bg-gray-900 shadow-xl">
                 <div
                   onClick={closeModal}
                   className="px-4 pt-4 cursor-pointer flex items-center space-x-4"
