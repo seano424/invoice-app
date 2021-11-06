@@ -6,15 +6,15 @@ import {
   addDoc,
   collection,
   serverTimestamp,
-  setDoc,
   updateDoc,
   doc,
 } from '@firebase/firestore'
 import { db } from '../firebase'
 import Button from './Button'
 import Label from './Label'
-import { useRecoilState, useSetRecoilState } from 'recoil'
+import { useSetRecoilState } from 'recoil'
 import { modalState } from '../atoms/modalAtom'
+import { paidState, pendingState, draftState } from '../atoms/filterAtom'
 import Item from './Item'
 
 function InvoiceForm({ header, invoice, type, identifier }) {
@@ -29,6 +29,9 @@ function InvoiceForm({ header, invoice, type, identifier }) {
     setValue,
   } = useForm()
   const setOpen = useSetRecoilState(modalState)
+  const setPaid = useSetRecoilState(paidState)
+  const setPending = useSetRecoilState(pendingState)
+  const setDraft = useSetRecoilState(draftState)
   const toEdit = type === 'edit'
   useEffect(() => {
     invoice && setTotalItems(invoice.items)
@@ -111,6 +114,9 @@ function InvoiceForm({ header, invoice, type, identifier }) {
     console.log('new doc updated', docRef)
     setLoadingInvoice(false)
     setOpen(false)
+    setPaid(false)
+    setPending(false)
+    setDraft(false)
   }
 
   const onSubmit = async (data, status, invoice) => {
@@ -136,7 +142,7 @@ function InvoiceForm({ header, invoice, type, identifier }) {
 
   return (
     <>
-      <main className="p-6">
+      <main className="p-6 mb-10">
         <h3 className="text-2xl font-semibold leading-6 text-gray-900 dark:text-white flex flex-col mb-6 overflow-y-auto">
           {header}
         </h3>

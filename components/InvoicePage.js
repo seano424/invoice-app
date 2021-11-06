@@ -3,7 +3,8 @@ import moment from 'moment'
 import { formatter } from '../lib/helpers'
 import Button from './Button'
 import { modalState, pageState, destroyModalState } from '../atoms/modalAtom'
-import { useRecoilState, useSetRecoilState } from 'recoil'
+import { paidState, pendingState, draftState } from '../atoms/filterAtom'
+import { useSetRecoilState } from 'recoil'
 import InvoiceForm from './InvoiceForm'
 import DeleteModal from './DeleteModal'
 import { updateDoc, doc } from '@firebase/firestore'
@@ -18,7 +19,6 @@ function InvoicePage({ invoice, identifier: id }) {
     description,
     items,
     paymentDue,
-    paymentTerms,
     senderAddress,
     status,
     total,
@@ -26,6 +26,9 @@ function InvoicePage({ invoice, identifier: id }) {
   const setOpen = useSetRecoilState(modalState)
   const setOpenDestroy = useSetRecoilState(destroyModalState)
   const setPage = useSetRecoilState(pageState)
+  const setPaid = useSetRecoilState(paidState)
+  const setPending = useSetRecoilState(pendingState)
+  const setDraft = useSetRecoilState(draftState)
 
   const handleEdit = () => {
     setPage(
@@ -59,6 +62,9 @@ function InvoicePage({ invoice, identifier: id }) {
 
     console.log('new doc updated', docRef)
     setOpen(false)
+    setPaid(false)
+    setPending(false)
+    setDraft(false)
   }
 
   const formattedPaymentDue = moment(paymentDue, 'DD-MM-YYYY').format(

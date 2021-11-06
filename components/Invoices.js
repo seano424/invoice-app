@@ -1,14 +1,15 @@
+import { useState, useEffect, useRef } from 'react'
+import { signIn, useSession } from 'next-auth/react'
+import Image from 'next/image'
 import { useRecoilState } from 'recoil'
 import { collection, onSnapshot, query, where } from '@firebase/firestore'
 import { ChevronDownIcon, PlusIcon } from '@heroicons/react/solid'
-import { useState, useEffect, useRef } from 'react'
-import { signIn, useSession } from 'next-auth/react'
 import InvoiceCard from './InvoiceCard'
 import { db } from '../firebase'
 import { modalState, pageState } from '../atoms/modalAtom'
+import { paidState, pendingState, draftState } from '../atoms/filterAtom'
 import Modal from './Modal'
 import InvoiceForm from './InvoiceForm'
-import Image from 'next/image'
 import useOutsideClick from '../hooks/useOutsideClick'
 
 function Invoices() {
@@ -17,10 +18,13 @@ function Invoices() {
   const { data: session } = useSession()
   const [_, setOpen] = useRecoilState(modalState)
   const [page, setPage] = useRecoilState(pageState)
+  const [filterPaid, setFilterPaid] = useRecoilState(paidState)
+  const [filterPending, setFilterPending] = useRecoilState(pendingState)
+  const [filterDraft, setFilterDraft] = useRecoilState(draftState)
   const [showFilter, setShowFilter] = useState(false)
-  const [filterDraft, setFilterDraft] = useState(false)
-  const [filterPending, setFilterPending] = useState(false)
-  const [filterPaid, setFilterPaid] = useState(false)
+  // const [filterDraft, setFilterDraft] = useState(false)
+  // const [filterPending, setFilterPending] = useState(false)
+  // const [filterPaid, setFilterPaid] = useState(false)
   const filterRef = useRef()
 
   useOutsideClick(filterRef, () => {
@@ -110,7 +114,7 @@ function Invoices() {
   return (
     <>
       <Modal page={page} />
-      <main className="max-w-xs md:max-w-3xl xl:w-screen mx-auto pt-[4.5rem]">
+      <main className="max-w-xs overflow-y-auto scrollbar-hide md:max-w-3xl xl:w-screen mx-auto pt-[4.5rem] h-screen">
         {/* Top Part */}
         <section className="flex justify-between space-x-10 my-4">
           <div>
@@ -146,6 +150,7 @@ function Invoices() {
                       className="focus:ring-0  text-primary"
                       id="draft"
                       name="draft"
+                      checked={filterDraft}
                     />
                     <label for="scales">Draft</label>
                   </div>
@@ -156,6 +161,7 @@ function Invoices() {
                       type="checkbox"
                       id="pending"
                       name="pending"
+                      checked={filterPending}
                     />
                     <label for="scales">Pending</label>
                   </div>
@@ -166,6 +172,7 @@ function Invoices() {
                       type="checkbox"
                       id="paid"
                       name="paid"
+                      checked={filterPaid}
                     />
                     <label for="scales">Paid</label>
                   </div>

@@ -2,6 +2,7 @@ import { useSetRecoilState } from 'recoil'
 import { modalState, pageState } from '../atoms/modalAtom'
 import InvoicePage from './InvoicePage'
 import StatusCard from './StatusCard'
+import { formatter } from '../lib/helpers'
 
 function Invoice(invoice) {
   const setOpen = useSetRecoilState(modalState)
@@ -27,8 +28,8 @@ function Invoice(invoice) {
         </div>
         <div className="flex justify-between items-center">
           <div>
-            <p className="text-gray-400">Due {paymentDue}</p>
-            <p className="font-bold">€ {total}</p>
+            <p className="text-gray-400 my-2">Due {paymentDue}</p>
+            <p className="font-bold">{formatter.format(total)}</p>
           </div>
           <StatusCard status={status} />
         </div>

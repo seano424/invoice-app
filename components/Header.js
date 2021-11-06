@@ -9,7 +9,7 @@ function Header() {
   const { theme, setTheme } = useTheme()
 
   return (
-    <div className="bg-gray-700 xl:w-[4.5rem] xl:h-full pr-4 xl:pr-0 fixed top-0 xl:static w-screen">
+    <div className="bg-gray-700 xl:w-[4.5rem] xl:h-screen pr-4 xl:pr-0 fixed top-0 xl:static w-screen">
       <ul className="flex xl:flex-col justify-between items-center xl:items-stretch xl:h-full">
         {/* Left Side - Logo / Top on XL */}
         <div>
