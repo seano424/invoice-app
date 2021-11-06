@@ -88,7 +88,7 @@ function Invoices() {
   return (
     <>
       <Modal page={page} />
-      <main className="max-w-xs overflow-y-auto scrollbar-hide md:max-w-3xl xl:w-screen mx-auto pt-[4.5rem] h-screen">
+      <main className="max-w-full overflow-y-auto scrollbar-hide md:max-w-3xl xl:w-screen mx-auto pt-[4.5rem] h-screen">
         {/* Top Part */}
         <section className="flex justify-between space-x-10 my-4">
           <div>
