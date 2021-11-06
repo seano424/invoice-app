@@ -9,9 +9,9 @@ function Header() {
   const { theme, setTheme } = useTheme()
 
   return (
-    <div className="bg-gray-700 w-full pr-4 fixed top-0">
-      <ul className="flex justify-between items-center">
-        {/* Left Side - Logo */}
+    <div className="bg-gray-700 xl:w-[4.5rem] xl:h-full pr-4 xl:pr-0 fixed top-0 xl:static w-screen">
+      <ul className="flex xl:flex-col justify-between items-center xl:items-stretch xl:h-full">
+        {/* Left Side - Logo / Top on XL */}
         <div>
           <li className="cursor-pointer" onClick={() => router.push('/')}>
             <svg
@@ -54,11 +54,11 @@ function Header() {
           </li>
         </div>
 
-        {/* Right Side - Dark Mode and User */}
-        <div className="flex items-center divide-secondary-purple space-x-2">
+        {/* Right Side - Dark Mode and User / Bottom on XL */}
+        <div className="flex xl:flex-col items-center divide-secondary-purple space-x-2 xl:space-x-0 xl:space-y-1 xl:my-2">
           <div
             onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-            className="cursor-pointer"
+            className="cursor-pointer xl:pb-2"
           >
             {theme === 'light' ? (
               <MoonIcon className="w-7 text-secondary" />
@@ -66,9 +66,10 @@ function Header() {
               <SunIcon className="w-7 text-secondary" />
             )}
           </div>
-          <div className="bg-secondary-text w-[.01rem] h-[4.5rem]" />
+          <div className="xl:bg-dark2 xl:h-0.5 xl:w-full" />
+          <div className="bg-secondary-text xl:pt-2" />
           {session ? (
-            <div className=" cursor-pointer">
+            <div className="cursor-pointer">
               <img
                 onClick={signOut}
                 className="w-10 h-10 rounded-full"

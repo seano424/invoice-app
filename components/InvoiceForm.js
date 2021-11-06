@@ -143,7 +143,7 @@ function InvoiceForm({ header, invoice, type, identifier }) {
         <form className="flex flex-col" onSubmit={handleSubmit(onSubmit)}>
           {/* SENDER DETAILS */}
           <section className="flex flex-col mb-4">
-            <p className="text-primary font-bold mb-4">Bill From</p>
+            <p className="text-primary mb-4 font-medium">Bill From</p>
             <Label className="text-gray-400">Street Address</Label>
             <input
               defaultValue={
@@ -156,7 +156,7 @@ function InvoiceForm({ header, invoice, type, identifier }) {
             />
             {errors.senderStreetAddress?.type === 'required' &&
               'Street address is required'}
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-3 gap-2">
               <div>
                 <Label>City</Label>
                 <input
@@ -175,18 +175,22 @@ function InvoiceForm({ header, invoice, type, identifier }) {
                   {...register('senderAddress.postCode')}
                 />
               </div>
+              <div>
+                <Label>Country</Label>
+                <input
+                  defaultValue={
+                    invoice ? invoice.senderAddress.country : 'Mexico'
+                  }
+                  className="input"
+                  {...register('senderAddress.country')}
+                />
+              </div>
             </div>
-            <Label>Country</Label>
-            <input
-              defaultValue={invoice ? invoice.senderAddress.country : 'Mexico'}
-              className="input"
-              {...register('senderAddress.country')}
-            />
           </section>
 
           {/* CLIENT DETAILS */}
           <section className="flex flex-col mb-4">
-            <p className="text-primary font-bold mb-4">Bill To</p>
+            <p className="text-primary mb-4 font-medium">Bill To</p>
             <Label className="text-gray-400">Client's Name</Label>
             <input
               defaultValue={invoice ? invoice.clientName : "Sean O'Reilly"}
@@ -213,7 +217,7 @@ function InvoiceForm({ header, invoice, type, identifier }) {
             />
             {errors.clientStreetAddress?.type === 'required' &&
               'Street address is required'}
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-3 gap-2">
               <div>
                 <Label>City</Label>
                 <input
@@ -234,13 +238,15 @@ function InvoiceForm({ header, invoice, type, identifier }) {
                   {...register('clientAddress.postCode')}
                 />
               </div>
+              <div>
+                <Label>Country</Label>
+                <input
+                  defaultValue={invoice ? invoice.clientAddress.country : 'USA'}
+                  className="input"
+                  {...register('clientAddress.country')}
+                />
+              </div>
             </div>
-            <Label>Country</Label>
-            <input
-              defaultValue={invoice ? invoice.clientAddress.country : 'USA'}
-              className="input"
-              {...register('clientAddress.country')}
-            />
           </section>
 
           {/* INVOICE TERMS */}

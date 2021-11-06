@@ -16,7 +16,7 @@ export default function Modal({ header, page }) {
       <Transition appear show={open} as={Fragment}>
         <Dialog
           as="div"
-          className="fixed max-w-2xl top-[4.5rem] inset-0 z-10 "
+          className="fixed max-w-2xl md:max-w-4xl xl:max-w-3xl top-[4.5rem] xl:top-0 xl:left-[4.5rem] inset-0 z-10 "
           onClose={closeModal}
         >
           <div className="min-h-screen">
@@ -29,7 +29,7 @@ export default function Modal({ header, page }) {
               leaveFrom="opacity-100"
               leaveTo="opacity-0"
             >
-              <Dialog.Overlay className="fixed inset-0 bg-black opacity-70" />
+              <Dialog.Overlay className="fixed inset-0 bg-gray-900 opacity-20" />
             </Transition.Child>
 
             {/* This element is to trick the browser into centering the modal contents. */}

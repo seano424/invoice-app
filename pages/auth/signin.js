@@ -3,10 +3,9 @@ import Header from '../../components/Header'
 
 export default function SignIn({ providers }) {
   return (
-    <>
+    <div className="h-screen w-screen flex">
       <Header />
-
-      <div className="flex flex-col items-center justify-center min-h-screen py-2 -mt-24 text-center">
+      <div className="flex flex-col items-center justify-center min-h-screen py-2 -mt-24 text-center w-screen">
         <h1 className="text-5xl font-black uppercase text-primary">Starling</h1>
         <p className="font-xs italic">
           Your personal invoice app. Keep track of your business.
@@ -24,7 +23,7 @@ export default function SignIn({ providers }) {
           ))}
         </div>
       </div>
-    </>
+    </div>
   )
 }
 

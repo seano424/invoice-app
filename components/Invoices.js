@@ -61,7 +61,7 @@ function Invoices() {
   return (
     <>
       <Modal page={page} />
-      <main className="max-w-xs md:max-w-3xl mx-auto pt-[4.5rem]">
+      <main className="max-w-xs md:max-w-3xl xl:w-screen mx-auto pt-[4.5rem]">
         {/* Top Part */}
         <section className="flex justify-between my-4">
           <div>

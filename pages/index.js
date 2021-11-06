@@ -3,7 +3,7 @@ import Invoices from '../components/Invoices'
 
 export default function Home() {
   return (
-    <div>
+    <div className="h-screen w-screen flex">
       {/* Header */}
       <Header />
       {/* Invoices */}
