@@ -1,12 +1,13 @@
 import { useState, useEffect, useRef } from 'react'
 import { signIn, useSession } from 'next-auth/react'
 import Image from 'next/image'
-import { useRecoilState } from 'recoil'
+import { useRecoilState, useRecoilValue } from 'recoil'
 import { collection, onSnapshot, query, where } from '@firebase/firestore'
 import { ChevronDownIcon, PlusIcon } from '@heroicons/react/solid'
 import InvoiceCard from './InvoiceCard'
 import { db } from '../firebase'
 import { modalState, pageState } from '../atoms/modalAtom'
+import { trialModeState } from '../atoms/trialModeAtom'
 import { paidState, pendingState, draftState } from '../atoms/filterAtom'
 import Modal from './Modal'
 import InvoiceForm from './InvoiceForm'
@@ -14,102 +15,75 @@ import useOutsideClick from '../hooks/useOutsideClick'
 
 function Invoices() {
   const [invoices, setInvoices] = useState([])
-  const [userInvoices, setUserInvoices] = useState([])
   const { data: session } = useSession()
   const [_, setOpen] = useRecoilState(modalState)
+  const trialMode = useRecoilValue(trialModeState)
   const [page, setPage] = useRecoilState(pageState)
   const [filterPaid, setFilterPaid] = useRecoilState(paidState)
   const [filterPending, setFilterPending] = useRecoilState(pendingState)
   const [filterDraft, setFilterDraft] = useRecoilState(draftState)
   const [showFilter, setShowFilter] = useState(false)
-  // const [filterDraft, setFilterDraft] = useState(false)
-  // const [filterPending, setFilterPending] = useState(false)
-  // const [filterPaid, setFilterPaid] = useState(false)
   const filterRef = useRef()
+
+  console.log('trialMode', trialMode)
 
   useOutsideClick(filterRef, () => {
     setShowFilter(false)
   })
 
-  const paidInvoices = userInvoices.filter(
+  const paidInvoices = invoices.filter(
     (i) => i.data().invoice.status === 'paid'
   )
-  const paidAndPendingInvoices = userInvoices.filter(
+  const paidAndPendingInvoices = invoices.filter(
     (i) =>
       i.data().invoice.status === 'paid' ||
       i.data().invoice.status === 'pending'
   )
-  const paidAndDraftInvoices = userInvoices.filter(
+  const paidAndDraftInvoices = invoices.filter(
     (i) =>
       i.data().invoice.status === 'paid' || i.data().invoice.status === 'draft'
   )
 
-  const pendingInvoices = userInvoices.filter(
+  const pendingInvoices = invoices.filter(
     (i) => i.data().invoice.status === 'pending'
   )
-  const pendingAndDraftInvoices = userInvoices.filter(
+  const pendingAndDraftInvoices = invoices.filter(
     (i) =>
       i.data().invoice.status === 'pending' ||
       i.data().invoice.status === 'draft'
   )
 
-  const draftInvoices = userInvoices.filter(
+  const draftInvoices = invoices.filter(
     (i) => i.data().invoice.status === 'draft'
   )
 
-  console.log(paidInvoices.map((i) => i.data()))
-  console.log(pendingInvoices.map((i) => i.data()))
-  console.log(draftInvoices.map((i) => i.data()))
-
-  // useEffect(
-  //   () =>
-  //     onSnapshot(q, (querySnapshot) => {
-  //       setUserInvoices(querySnapshot.docs)
-  //       const userInvoices = []
-  //       querySnapshot.forEach((doc) => {
-  //         userInvoices.push(doc.data())
-  //       })
-  //       console.log('userInvoices', userInvoices)
-  //     }),
-  //   [db]
-  // )
-
   useEffect(() => {
     session &&
+      !trialMode &&
       onSnapshot(
         query(collection(db, 'invoices'), where('uid', '==', session.user.uid)),
         (querySnapshot) => {
-          setUserInvoices(querySnapshot.docs)
-          const userInvoices = []
+          setInvoices(querySnapshot.docs)
+          const showInvoices = []
           querySnapshot.forEach((doc) => {
-            userInvoices.push(doc.data())
+            showInvoices.push(doc.data())
           })
-          console.log('userInvoices', userInvoices)
+          console.log('invoices', showInvoices)
         }
       )
-  }, [db, session])
 
-  // useEffect(
-  //   () =>
-  //     onSnapshot(query(collection(db, 'invoices')), (snapshot) => {
-  //       setInvoices(snapshot.docs)
-  //     }),
-  //   [db]
-  // )
+    trialMode &&
+      onSnapshot(query(collection(db, 'invoices')), (snapshot) => {
+        setInvoices(snapshot.docs)
+      })
+
+    !session && !trialMode && setInvoices([])
+  }, [db, session, trialMode])
 
   const handleNew = () => {
     setPage(<InvoiceForm type="new" header="New Invoice" />)
     setOpen(true)
   }
-
-  console.log(
-    'draft:',
-    filterDraft,
-    'pending:',
-    filterPending,
-    'paid:',
-    filterPaid
-  )
 
   return (
     <>
@@ -121,7 +95,7 @@ function Invoices() {
             <h4 className="text-xl font-bold">Invoices</h4>
             <p>
               <span className="hidden sm:inline-block"> There are </span>{' '}
-              {userInvoices.length} invoices
+              {invoices.length} invoices
             </p>
           </div>
 
@@ -181,7 +155,7 @@ function Invoices() {
             </div>
 
             {/* New Invoice Button */}
-            <div onClick={() => !session && signIn()}>
+            <div onClick={() => !session && !trialMode && signIn()}>
               <button
                 onClick={handleNew}
                 className="flex space-x-2 items-center bg-primary p-2 rounded-full cursor-pointer"
@@ -197,7 +171,7 @@ function Invoices() {
 
         {/* Individual invoices */}
         <section>
-          {!userInvoices.length && (
+          {!invoices.length && (
             <div className="relative h-80 xl:h-[25rem] w-full">
               <Image src="/images/nothing-here.svg" layout="fill" />
             </div>
@@ -205,7 +179,7 @@ function Invoices() {
           {!filterDraft &&
             !filterPaid &&
             !filterPending &&
-            userInvoices?.map((invoice) => (
+            invoices?.map((invoice) => (
               <InvoiceCard
                 key={invoice.id}
                 identifier={invoice.id}
@@ -275,7 +249,7 @@ function Invoices() {
           {filterDraft &&
             filterPaid &&
             filterPending &&
-            userInvoices?.map((invoice) => (
+            invoices?.map((invoice) => (
               <InvoiceCard
                 key={invoice.id}
                 identifier={invoice.id}

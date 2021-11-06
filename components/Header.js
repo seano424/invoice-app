@@ -2,11 +2,19 @@ import { MoonIcon, SunIcon } from '@heroicons/react/solid'
 import { useRouter } from 'next/dist/client/router'
 import { signIn, useSession, signOut } from 'next-auth/react'
 import { useTheme } from 'next-themes'
+import { trialModeState } from '../atoms/trialModeAtom'
+import { useRecoilState } from 'recoil'
 
 function Header() {
   const { data: session } = useSession()
   const router = useRouter()
   const { theme, setTheme } = useTheme()
+  const [trialMode, setTrialMode] = useRecoilState(trialModeState)
+
+  const handleSignIn = () => {
+    setTrialMode(false)
+    signIn()
+  }
 
   return (
     <div className="bg-gray-700 xl:w-[4.5rem] xl:h-screen pr-4 xl:pr-0 fixed top-0 xl:static w-screen">
@@ -54,6 +62,18 @@ function Header() {
           </li>
         </div>
 
+        {/* Center Trial Mode */}
+        {!session && (
+          <div
+            onClick={() => setTrialMode(!trialMode)}
+            className="bg-dark cursor-pointer rounded-full py-3 px-3"
+          >
+            <h1 className="text-white  font-black text-2xl xl:text-lg text-center">
+              {trialMode ? 'Leave Trial Mode' : 'Click for Trial Mode'}
+            </h1>
+          </div>
+        )}
+
         {/* Right Side - Dark Mode and User / Bottom on XL */}
         <div className="flex xl:flex-col items-center divide-secondary-purple space-x-2 xl:space-x-0 xl:space-y-1 xl:my-2">
           <div
@@ -78,7 +98,10 @@ function Header() {
               />
             </div>
           ) : (
-            <button className="text-white font-bold text-sm" onClick={signIn}>
+            <button
+              className="text-white font-bold text-sm"
+              onClick={handleSignIn}
+            >
               Sign In
             </button>
           )}
