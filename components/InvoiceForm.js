@@ -137,7 +137,7 @@ function InvoiceForm({ header, invoice, type, identifier }) {
   return (
     <>
       <main className="p-6">
-        <h3 className="text-2xl font-semibold leading-6 text-gray-900 dark:text-white flex flex-col mb-6">
+        <h3 className="text-2xl font-semibold leading-6 text-gray-900 dark:text-white flex flex-col mb-6 overflow-y-auto">
           {header}
         </h3>
         <form className="flex flex-col" onSubmit={handleSubmit(onSubmit)}>
@@ -302,7 +302,7 @@ function InvoiceForm({ header, invoice, type, identifier }) {
       </main>
 
       {/* FOOTER WITH BUTTONS */}
-      <footer className="flex items-center justify-center w-full h-24 bg-white dark:bg-dark gap-3">
+      <footer className="flex items-center justify-center w-full h-24 bg-white dark:bg-dark gap-3 sticky bottom-[4.5rem] xl:bottom-0">
         {toEdit ? (
           <>
             <div onClick={() => setOpen(false)}>
