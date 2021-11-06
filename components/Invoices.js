@@ -1,12 +1,5 @@
 import { useRecoilState } from 'recoil'
-import {
-  collection,
-  onSnapshot,
-  orderBy,
-  query,
-  getDocs,
-  doc,
-} from '@firebase/firestore'
+import { collection, onSnapshot, query, where } from '@firebase/firestore'
 import { ChevronDownIcon, PlusIcon } from '@heroicons/react/solid'
 import { useState, useEffect } from 'react'
 import { signIn, useSession } from 'next-auth/react'
@@ -15,20 +8,52 @@ import { db } from '../firebase'
 import { modalState, pageState } from '../atoms/modalAtom'
 import Modal from './Modal'
 import InvoiceForm from './InvoiceForm'
+import Image from 'next/image'
 
 function Invoices() {
   const [invoices, setInvoices] = useState([])
+  const [userInvoices, setUserInvoices] = useState([])
   const { data: session } = useSession()
   const [_, setOpen] = useRecoilState(modalState)
   const [page, setPage] = useRecoilState(pageState)
 
-  useEffect(
-    () =>
-      onSnapshot(query(collection(db, 'invoices')), (snapshot) => {
-        setInvoices(snapshot.docs)
-      }),
-    [db]
-  )
+  // useEffect(
+  //   () =>
+  //     onSnapshot(q, (querySnapshot) => {
+  //       setUserInvoices(querySnapshot.docs)
+  //       const userInvoices = []
+  //       querySnapshot.forEach((doc) => {
+  //         userInvoices.push(doc.data())
+  //       })
+  //       console.log('userInvoices', userInvoices)
+  //     }),
+  //   [db]
+  // )
+
+  useEffect(() => {
+    session &&
+      onSnapshot(
+        query(collection(db, 'invoices'), where('uid', '==', session.user.uid)),
+        (querySnapshot) => {
+          setUserInvoices(querySnapshot.docs)
+          const userInvoices = []
+          querySnapshot.forEach((doc) => {
+            userInvoices.push(doc.data())
+          })
+          console.log('userInvoices', userInvoices)
+        }
+      )
+  }, [db, session])
+
+  console.log('userInvoices1', userInvoices)
+
+  // useEffect(
+  //   () =>
+  //     onSnapshot(query(collection(db, 'invoices')), (snapshot) => {
+  //       setInvoices(snapshot.docs)
+  //     }),
+  //   [db]
+  // )
 
   const handleNew = () => {
     setPage(<InvoiceForm type="new" header="New Invoice" />)
@@ -45,7 +70,7 @@ function Invoices() {
             <h4 className="text-xl font-bold">Invoices</h4>
             <p>
               <span className="hidden sm:inline-block"> There are </span>{' '}
-              {invoices.length} invoices
+              {userInvoices.length} invoices
             </p>
           </div>
           <div className="flex items-center space-x-4">
@@ -69,8 +94,12 @@ function Invoices() {
 
         {/* Individual invoices */}
         <section>
-          {invoices?.map((invoice) => (
-            // <h1>{invoice.id}</h1>
+          {!userInvoices.length && (
+            <div className="relative h-80 xl:h-[25rem] w-full">
+              <Image src="/images/nothing-here.svg" layout="fill" />
+            </div>
+          )}
+          {userInvoices?.map((invoice) => (
             <InvoiceCard
               key={invoice.id}
               identifier={invoice.id}
