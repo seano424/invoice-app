@@ -73,8 +73,8 @@ function InvoiceForm({ header, invoice, type, identifier }) {
       id: nanoid(6).toUpperCase(),
     }
     const docRef = await addDoc(collection(db, 'invoices'), {
-      username: session.user.username,
-      uid: session.user.uid,
+      username: session ? session.user.username : 'test user',
+      uid: session ? session.user.uid : '123456',
       invoice: invoiceData,
       timestamp: serverTimestamp(),
     })

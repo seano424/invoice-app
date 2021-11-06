@@ -29,7 +29,9 @@ function Invoice(invoice) {
         <div className="flex justify-between items-center">
           <div>
             <p className="text-gray-400 my-2">Due {paymentDue}</p>
-            <p className="font-bold">{formatter.format(total)}</p>
+            <p className="font-bold">
+              {typeof total === 'number' ? formatter.format(total) : total}
+            </p>
           </div>
           <StatusCard status={status} />
         </div>
