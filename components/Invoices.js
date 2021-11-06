@@ -1,7 +1,7 @@
 import { useRecoilState } from 'recoil'
 import { collection, onSnapshot, query, where } from '@firebase/firestore'
 import { ChevronDownIcon, PlusIcon } from '@heroicons/react/solid'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { signIn, useSession } from 'next-auth/react'
 import InvoiceCard from './InvoiceCard'
 import { db } from '../firebase'
@@ -9,6 +9,7 @@ import { modalState, pageState } from '../atoms/modalAtom'
 import Modal from './Modal'
 import InvoiceForm from './InvoiceForm'
 import Image from 'next/image'
+import useOutsideClick from '../hooks/useOutsideClick'
 
 function Invoices() {
   const [invoices, setInvoices] = useState([])
@@ -16,6 +17,45 @@ function Invoices() {
   const { data: session } = useSession()
   const [_, setOpen] = useRecoilState(modalState)
   const [page, setPage] = useRecoilState(pageState)
+  const [showFilter, setShowFilter] = useState(false)
+  const [filterDraft, setFilterDraft] = useState(false)
+  const [filterPending, setFilterPending] = useState(false)
+  const [filterPaid, setFilterPaid] = useState(false)
+  const filterRef = useRef()
+
+  useOutsideClick(filterRef, () => {
+    setShowFilter(false)
+  })
+
+  const paidInvoices = userInvoices.filter(
+    (i) => i.data().invoice.status === 'paid'
+  )
+  const paidAndPendingInvoices = userInvoices.filter(
+    (i) =>
+      i.data().invoice.status === 'paid' ||
+      i.data().invoice.status === 'pending'
+  )
+  const paidAndDraftInvoices = userInvoices.filter(
+    (i) =>
+      i.data().invoice.status === 'paid' || i.data().invoice.status === 'draft'
+  )
+
+  const pendingInvoices = userInvoices.filter(
+    (i) => i.data().invoice.status === 'pending'
+  )
+  const pendingAndDraftInvoices = userInvoices.filter(
+    (i) =>
+      i.data().invoice.status === 'pending' ||
+      i.data().invoice.status === 'draft'
+  )
+
+  const draftInvoices = userInvoices.filter(
+    (i) => i.data().invoice.status === 'draft'
+  )
+
+  console.log(paidInvoices.map((i) => i.data()))
+  console.log(pendingInvoices.map((i) => i.data()))
+  console.log(draftInvoices.map((i) => i.data()))
 
   // useEffect(
   //   () =>
@@ -58,12 +98,21 @@ function Invoices() {
     setOpen(true)
   }
 
+  console.log(
+    'draft:',
+    filterDraft,
+    'pending:',
+    filterPending,
+    'paid:',
+    filterPaid
+  )
+
   return (
     <>
       <Modal page={page} />
       <main className="max-w-xs md:max-w-3xl xl:w-screen mx-auto pt-[4.5rem]">
         {/* Top Part */}
-        <section className="flex justify-between my-4">
+        <section className="flex justify-between space-x-10 my-4">
           <div>
             <h4 className="text-xl font-bold">Invoices</h4>
             <p>
@@ -71,11 +120,60 @@ function Invoices() {
               {userInvoices.length} invoices
             </p>
           </div>
+
+          {/* Filter Dropdown */}
           <div className="flex items-center space-x-4">
-            <div className="flex items-center space-x-2">
-              <p className="font-bold">Filter </p>
-              <ChevronDownIcon className="h-8 w-8 cursor-pointer" />
+            <div
+              ref={filterRef}
+              className="flex relative items-center space-x-2"
+            >
+              <div
+                onClick={() => setShowFilter(!showFilter)}
+                className="flex space-x-2 items-center cursor-pointer"
+              >
+                <p className="font-bold">
+                  Filter{' '}
+                  <span className="hidden sm:inline-flex">by status</span>{' '}
+                </p>
+                <ChevronDownIcon className="h-8 w-8 cursor-pointer" />
+              </div>
+              {showFilter && (
+                <div className="absolute bg-white shadow-lg pl-10 pr-24 py-6 rounded-xl top-12 mt-2 -left-12">
+                  <div className="flex items-center space-x-3">
+                    <input
+                      onChange={() => setFilterDraft(!filterDraft)}
+                      type="checkbox"
+                      className="focus:ring-0  text-primary"
+                      id="draft"
+                      name="draft"
+                    />
+                    <label for="scales">Draft</label>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <input
+                      onChange={() => setFilterPending(!filterPending)}
+                      className="focus:ring-0  text-primary"
+                      type="checkbox"
+                      id="pending"
+                      name="pending"
+                    />
+                    <label for="scales">Pending</label>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <input
+                      onChange={() => setFilterPaid(!filterPaid)}
+                      className="focus:ring-0  text-primary"
+                      type="checkbox"
+                      id="paid"
+                      name="paid"
+                    />
+                    <label for="scales">Paid</label>
+                  </div>
+                </div>
+              )}
             </div>
+
+            {/* New Invoice Button */}
             <div onClick={() => !session && signIn()}>
               <button
                 onClick={handleNew}
@@ -97,13 +195,86 @@ function Invoices() {
               <Image src="/images/nothing-here.svg" layout="fill" />
             </div>
           )}
-          {userInvoices?.map((invoice) => (
-            <InvoiceCard
-              key={invoice.id}
-              identifier={invoice.id}
-              invoice={invoice.data().invoice}
-            />
-          ))}
+          {!filterDraft &&
+            !filterPaid &&
+            !filterPending &&
+            userInvoices?.map((invoice) => (
+              <InvoiceCard
+                key={invoice.id}
+                identifier={invoice.id}
+                invoice={invoice.data().invoice}
+              />
+            ))}
+          {filterDraft &&
+            !filterPaid &&
+            !filterPending &&
+            draftInvoices?.map((invoice) => (
+              <InvoiceCard
+                key={invoice.id}
+                identifier={invoice.id}
+                invoice={invoice.data().invoice}
+              />
+            ))}
+          {!filterDraft &&
+            filterPaid &&
+            !filterPending &&
+            paidInvoices?.map((invoice) => (
+              <InvoiceCard
+                key={invoice.id}
+                identifier={invoice.id}
+                invoice={invoice.data().invoice}
+              />
+            ))}
+          {!filterDraft &&
+            !filterPaid &&
+            filterPending &&
+            pendingInvoices?.map((invoice) => (
+              <InvoiceCard
+                key={invoice.id}
+                identifier={invoice.id}
+                invoice={invoice.data().invoice}
+              />
+            ))}
+          {filterDraft &&
+            filterPaid &&
+            !filterPending &&
+            paidAndDraftInvoices?.map((invoice) => (
+              <InvoiceCard
+                key={invoice.id}
+                identifier={invoice.id}
+                invoice={invoice.data().invoice}
+              />
+            ))}
+          {filterDraft &&
+            !filterPaid &&
+            filterPending &&
+            pendingAndDraftInvoices?.map((invoice) => (
+              <InvoiceCard
+                key={invoice.id}
+                identifier={invoice.id}
+                invoice={invoice.data().invoice}
+              />
+            ))}
+          {!filterDraft &&
+            filterPaid &&
+            filterPending &&
+            paidAndPendingInvoices?.map((invoice) => (
+              <InvoiceCard
+                key={invoice.id}
+                identifier={invoice.id}
+                invoice={invoice.data().invoice}
+              />
+            ))}
+          {filterDraft &&
+            filterPaid &&
+            filterPending &&
+            userInvoices?.map((invoice) => (
+              <InvoiceCard
+                key={invoice.id}
+                identifier={invoice.id}
+                invoice={invoice.data().invoice}
+              />
+            ))}
         </section>
       </main>
     </>
