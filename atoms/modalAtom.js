@@ -10,6 +10,10 @@ export const destroyModalState = atom({
   key: 'destroyModalState',
   default: false,
 })
+export const errorModalState = atom({
+  key: 'errorModalState',
+  default: false,
+})
 
 export const pageState = atom({
   key: 'pageState',

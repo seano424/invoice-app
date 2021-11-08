@@ -74,8 +74,6 @@ function InvoicePage({ invoice, identifier: id }) {
     'DD MMM YYYY'
   )
 
-  console.log(invoice)
-
   return (
     <>
       <div className="flex flex-col max-h-full w-full">

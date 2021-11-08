@@ -13,9 +13,10 @@ import { db } from '../firebase'
 import Button from './Button'
 import Label from './Label'
 import { useSetRecoilState } from 'recoil'
-import { modalState } from '../atoms/modalAtom'
+import { modalState, errorModalState } from '../atoms/modalAtom'
 import { paidState, pendingState, draftState } from '../atoms/filterAtom'
 import Item from './Item'
+import ErrorModal from './ErrorModal'
 
 function InvoiceForm({ header, invoice, type, identifier }) {
   const [loadingInvoice, setLoadingInvoice] = useState(false)
@@ -29,6 +30,7 @@ function InvoiceForm({ header, invoice, type, identifier }) {
     setValue,
   } = useForm()
   const setOpen = useSetRecoilState(modalState)
+  const setErrorOpen = useSetRecoilState(errorModalState)
   const setPaid = useSetRecoilState(paidState)
   const setPending = useSetRecoilState(pendingState)
   const setDraft = useSetRecoilState(draftState)
@@ -120,8 +122,9 @@ function InvoiceForm({ header, invoice, type, identifier }) {
   }
 
   const onSubmit = async (data, status, invoice) => {
-    toEdit && (await updateInvoice(data, status, invoice))
-    !toEdit && (await addInvoice(data, status))
+    !session && setErrorOpen(true)
+    toEdit && session && (await updateInvoice(data, status, invoice))
+    !toEdit && session && (await addInvoice(data, status))
   }
 
   const paymentDue = (createdAt, paymentTerms) => {
@@ -143,6 +146,7 @@ function InvoiceForm({ header, invoice, type, identifier }) {
   return (
     <>
       <main className="p-6 mb-10">
+        <ErrorModal />
         <h3 className="text-2xl font-semibold leading-6 text-gray-900 dark:text-white flex flex-col mb-6 overflow-y-auto">
           {header}
         </h3>

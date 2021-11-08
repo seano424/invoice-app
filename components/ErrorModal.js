@@ -1,28 +1,18 @@
 import { Dialog, Transition } from '@headlessui/react'
 import { Fragment } from 'react'
-import { destroyModalState, modalState } from '../atoms/modalAtom'
-import { useRecoilState, useSetRecoilState } from 'recoil'
-import { doc, deleteDoc } from '@firebase/firestore'
-import { db } from '../firebase'
+import { errorModalState } from '../atoms/modalAtom'
+import { useRecoilState } from 'recoil'
 
-export default function DeleteModal({ invoice, id }) {
-  const [openDestroy, setOpenDestroy] = useRecoilState(destroyModalState)
-  const setOpen = useSetRecoilState(modalState)
+export default function ErrorModal({ invoice, id }) {
+  const [openError, setOpenError] = useRecoilState(errorModalState)
 
   function closeModal() {
-    setOpenDestroy(false)
-  }
-
-  const destroyInvoice = async () => {
-    const deletedDoc = await deleteDoc(doc(db, 'invoices', id))
-    console.log('Deleted doc', deletedDoc)
-    setOpenDestroy(false)
-    setOpen(false)
+    setOpenError(false)
   }
 
   return (
     <>
-      <Transition appear show={openDestroy} as={Fragment}>
+      <Transition appear show={openError} as={Fragment}>
         <Dialog
           as="div"
           className="fixed inset-0 z-10 overflow-y-auto"
@@ -62,29 +52,21 @@ export default function DeleteModal({ invoice, id }) {
                   as="h3"
                   className="text-lg font-semibold leading-6 text-gray-900 tracking-wide "
                 >
-                  Confirm Deletion
+                  Oops!
                 </Dialog.Title>
                 <div className="mt-2">
                   <p className="text-sm text-gray-500">
-                    Are you sure you want to delete invoice #
-                    <span>{invoice.id}</span>? This action cannot be undone.
+                    You must be signed in to complete this form
                   </p>
                 </div>
 
-                <div className="mt-4 flex space-x-4 justify-end">
+                <div className="mt-4">
                   <button
                     type="button"
                     className="inline-flex justify-center px-4 py-2 text-sm font-medium text-blue-900 bg-blue-50 border border-transparent rounded-3xl hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500"
                     onClick={closeModal}
                   >
-                    Cancel
-                  </button>
-                  <button
-                    type="button"
-                    className="inline-flex justify-center px-4 py-2 text-sm font-medium text-white bg-red-500 border border-transparent rounded-3xl hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500"
-                    onClick={destroyInvoice}
-                  >
-                    Delete
+                    Got it!
                   </button>
                 </div>
               </div>
