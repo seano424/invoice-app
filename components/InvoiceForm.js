@@ -146,15 +146,13 @@ function InvoiceForm({ header, invoice, type, identifier }) {
 
   return (
     <>
-      <main className="p-6 mb-10">
+      <main className={styles.main}>
         <ErrorModal />
-        <h3 className="text-2xl font-semibold leading-6 text-gray-900  flex flex-col mb-6 overflow-y-auto dark:text-white">
-          {header}
-        </h3>
-        <form className="flex flex-col" onSubmit={handleSubmit(onSubmit)}>
+        <h3 className={`${styles.header} dark:text-white`}>{header}</h3>
+        <form className={styles.form} onSubmit={handleSubmit(onSubmit)}>
           {/* SENDER DETAILS */}
-          <section className="flex flex-col mb-4">
-            <p className="text-primary mb-4 font-medium">Bill From</p>
+          <section className={styles.details}>
+            <p>Bill From</p>
             <Label className="text-gray-400">Street Address</Label>
             <input
               defaultValue={
@@ -167,7 +165,7 @@ function InvoiceForm({ header, invoice, type, identifier }) {
             />
             {errors.senderStreetAddress?.type === 'required' &&
               'Street address is required'}
-            <div className="grid grid-cols-3 gap-2">
+            <div className={styles.locale}>
               <div>
                 <Label>City</Label>
                 <input
@@ -200,8 +198,8 @@ function InvoiceForm({ header, invoice, type, identifier }) {
           </section>
 
           {/* CLIENT DETAILS */}
-          <section className="flex flex-col mb-4">
-            <p className="text-primary mb-4 font-medium">Bill To</p>
+          <section className={styles.details}>
+            <p>Bill To</p>
             <Label className="text-gray-400">Client's Name</Label>
             <input
               defaultValue={invoice ? invoice.clientName : "Sean O'Reilly"}
@@ -228,7 +226,7 @@ function InvoiceForm({ header, invoice, type, identifier }) {
             />
             {errors.clientStreetAddress?.type === 'required' &&
               'Street address is required'}
-            <div className="grid grid-cols-3 gap-2">
+            <div className={styles.locale}>
               <div>
                 <Label>City</Label>
                 <input
@@ -261,7 +259,7 @@ function InvoiceForm({ header, invoice, type, identifier }) {
           </section>
 
           {/* INVOICE TERMS */}
-          <section className="flex flex-col">
+          <section>
             <Label>Invoice Date</Label>
             <input
               defaultValue={invoice ? invoice.createdAt : '1989-10-07'}
@@ -290,9 +288,7 @@ function InvoiceForm({ header, invoice, type, identifier }) {
 
           {/* ITEMS LIST */}
           <section className="my-8">
-            <h3 className="text-gray-400 text-xl font-semibold tracking-wide mb-4">
-              Item List
-            </h3>
+            <h3 className={styles.itemHeader}>Item List</h3>
             {totalItems.map((item, idx) => (
               <Item
                 item={item}
@@ -304,7 +300,7 @@ function InvoiceForm({ header, invoice, type, identifier }) {
             ))}
             <button
               onClick={addItems}
-              className="bg-purple-50 text-secondary hover:text-primary dark:bg-dark dark:text-gray-400 dark:hover:text-white w-full p-2 rounded-full font-semibold transition"
+              className={`${styles.addNewBtn} dark:bg-dark dark:text-gray-400 dark:hover:text-white`}
             >
               + Add New Item
             </button>
@@ -313,7 +309,7 @@ function InvoiceForm({ header, invoice, type, identifier }) {
       </main>
 
       {/* FOOTER WITH BUTTONS */}
-      <footer className="flex items-center justify-center w-full h-24 bg-white dark:bg-dark gap-3 sticky bottom-[4.5rem] xl:bottom-0">
+      <footer className={`${styles.footer} dark:bg-dark`}>
         {toEdit ? (
           <>
             <div onClick={() => setOpen(false)}>

@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import Header from '../components/Header'
 import Invoices from '../components/Invoices'
+import Layout from '@/components/Layout'
 import { useDispatch } from 'react-redux'
 import { setInvoices } from '../redux/features/invoice/invoiceSlice'
 import { db } from '../firebase'
@@ -39,9 +40,9 @@ export default function Home() {
   }, [db, session, trialMode])
 
   return (
-    <div className="h-screen w-screen flex">
+    <Layout>
       <Header />
       <Invoices />
-    </div>
+    </Layout>
   )
 }

@@ -5,3 +5,35 @@
 .something {
   @apply font-bold;
 }
+
+.main {
+  @apply p-6 mb-10;
+}
+
+.form {
+  @apply flex flex-col;
+}
+
+.details {
+  @apply flex flex-col mb-4;
+}
+
+.details p {
+  @apply text-primary mb-4 font-medium;
+}
+
+.locale {
+  @apply grid grid-cols-3 gap-2;
+}
+
+.itemHeader {
+  @apply text-gray-400 text-xl font-semibold tracking-wide mb-4;
+}
+
+.addNewBtn {
+  @apply bg-purple-50 text-secondary hover:text-primary w-full p-2 rounded-full font-semibold transition;
+}
+
+.footer {
+  @apply flex items-center justify-center w-full h-24 bg-white gap-3 sticky bottom-[4.5rem] xl:bottom-0;
+}
