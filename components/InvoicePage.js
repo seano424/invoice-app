@@ -9,6 +9,7 @@ import InvoiceForm from './InvoiceForm'
 import DeleteModal from './DeleteModal'
 import { updateDoc, doc } from '@firebase/firestore'
 import { db } from '../firebase'
+import styles from '@/styles/InvoicePage.module.css'
 
 function InvoicePage({ invoice, identifier: id }) {
   const {
@@ -75,127 +76,109 @@ function InvoicePage({ invoice, identifier: id }) {
   )
 
   return (
-    <>
-      <div className="flex flex-col max-h-full w-full">
-        <DeleteModal invoice={invoice} id={id} />
-        <main className="text-secondary font-light p-6 flex-1 overflow-y-auto">
-          {/* Status Card */}
-          <div className="flex justify-between items-center bg-white dark:bg-dark p-5 rounded-lg shadow-sm">
-            <p className="text-gray-400">Status</p>
-            <StatusCard status={status} />
-          </div>
-          {/* Main Section */}
-          <div className="p-5 my-5 bg-white dark:bg-dark dark:text-gray-200 rounded-lg shadow-sm">
+    <div className={styles.container}>
+      <DeleteModal invoice={invoice} id={id} />
+      <main className={styles.main}>
+        {/* Status Card */}
+        <section className={`${styles.status} dark:bg-dark`}>
+          <p>Status</p>
+          <StatusCard status={status} />
+        </section>
+        {/* Main Section */}
+        <section className={`${styles.info} dark:bg-dark dark:text-gray-200`}>
+          <article>
             <div>
-              <h3 className="font-bold">
-                #{' '}
-                <span className="text-black dark:text-white">{invoice.id}</span>
+              <h3 className={styles.header}>
+                # <span className="dark:text-white">{invoice.id}</span>
               </h3>
               <p>{description}</p>
             </div>
 
             {/* Sender Address */}
-            <section className="my-5">
+            <div className="my-5">
               <p>{senderAddress.street}</p>
               <p>{senderAddress.city}</p>
               <p>{senderAddress.postCode}</p>
               <p>{senderAddress.country}</p>
-            </section>
+            </div>
 
             {/* Client and Invoice Details */}
-            <section className="flex justify-between my-10 ">
+            <div className={styles.clientDetails}>
               {/* Column 1 */}
-              <article className="flex flex-col justify-between">
-                <div className="mb-5">
+              <div className={styles.col}>
+                <div>
                   <p>Invoice Date</p>
-                  <h2 className="text-black dark:text-white font-semibold text-xl">
-                    {formattedInvoiceDate}
-                  </h2>
+                  <h2 className="dark:text-white">{formattedInvoiceDate}</h2>
                 </div>
                 <div>
                   <p>Payment Due</p>
-                  <h2 className="text-black dark:text-white font-semibold text-xl">
-                    {formattedPaymentDue}
-                  </h2>
+                  <h2 className="dark:text-white">{formattedPaymentDue}</h2>
                 </div>
-              </article>
+              </div>
               {/* Column 2 */}
-              <article>
+              <div className={styles.col}>
                 <p>Bill To</p>
-                <h2 className="text-black dark:text-white font-semibold text-xl">
-                  {clientName}
-                </h2>
+                <h2 className="dark:text-white">{clientName}</h2>
                 <p>{clientAddress.street}</p>
                 <p>{clientAddress.city}</p>
                 <p>{clientAddress.postCode}</p>
                 <p>{clientAddress.country}</p>
-              </article>
-            </section>
+              </div>
+            </div>
 
             {/* Client Email */}
-            <section>
+            <div className={styles.col}>
               <p>Sent to</p>
-              <h2 className="text-black dark:text-white font-semibold text-xl">
-                {clientEmail}
-              </h2>
-            </section>
+              <h2 className="dark:text-white">{clientEmail}</h2>
+            </div>
+          </article>
 
-            <section className="my-10">
-              <div className="bg-purple-50 dark:bg-dark2 bg-opacity-60 p-4 rounded-t-lg">
-                {items.map((item, idx) => (
-                  <div
-                    key={idx}
-                    className="flex justify-between items-center my-4"
-                  >
-                    <div>
-                      <h3 className="text-black dark:text-white font-semibold mb-2">
-                        {item.name}
-                      </h3>
-                      <p className="font-semibold">
-                        {item.quantity} x{' '}
-                        {typeof item.price === 'number'
-                          ? formatter.format(item.price)
-                          : total}
-                      </p>
-                    </div>
-                    <h3 className="text-black dark:text-white font-semibold">
-                      {typeof item.total === 'number'
-                        ? formatter.format(item.total)
+          <article className="my-10">
+            <div className={`${styles.items} dark:bg-dark2`}>
+              {items.map((item, idx) => (
+                <div key={idx} className={styles.itemContainer}>
+                  <div className={styles.item}>
+                    <h3 className="dark:text-white">{item.name}</h3>
+                    <p>
+                      {item.quantity} x{' '}
+                      {typeof item.price === 'number'
+                        ? formatter.format(item.price)
                         : total}
-                    </h3>
+                    </p>
                   </div>
-                ))}
-              </div>
-              <div className="flex items-center justify-between bg-gray-900 dark:bg-black rounded-b-lg p-4">
-                <p className=" text-gray-200">Grand Total</p>
-                <h1 className="text-2xl text-white font-bold">
-                  {typeof total === 'number' ? formatter.format(total) : total}
-                </h1>
-              </div>
-            </section>
-          </div>
-        </main>
-        <footer className="flex items-center sticky bottom-[4.5rem] xl:bottom-0 justify-center w-full h-24 bg-white dark:bg-dark gap-3">
-          <div onClick={handleEdit}>
-            <Button
-              text="Edit"
-              textColor="text-gray-500"
-              bgColor="bg-gray-50"
-            />
-          </div>
-          <div onClick={openDestroyModal}>
-            <Button text="Delete" textColor="text-white" bgColor="bg-red-500" />
-          </div>
-          <div onClick={() => handleMarkAsPaid(invoice)}>
-            <Button
-              text="Mark as Paid"
-              textColor="text-white"
-              bgColor="bg-primary"
-            />
-          </div>
-        </footer>
-      </div>
-    </>
+                  <h3 className="dark:text-white">
+                    {typeof item.total === 'number'
+                      ? formatter.format(item.total)
+                      : total}
+                  </h3>
+                </div>
+              ))}
+            </div>
+            <div className={`${styles.totals} dark:bg-black`}>
+              <p>Grand Total</p>
+              <h1>
+                {typeof total === 'number' ? formatter.format(total) : total}
+              </h1>
+            </div>
+          </article>
+        </section>
+      </main>
+      <footer className={`${styles.footer} dark:bg-dark`}>
+        <div onClick={handleEdit}>
+          <Button text="Edit" textColor="text-gray-500" bgColor="bg-gray-50" />
+        </div>
+        <div onClick={openDestroyModal}>
+          <Button text="Delete" textColor="text-white" bgColor="bg-red-500" />
+        </div>
+        <div onClick={() => handleMarkAsPaid(invoice)}>
+          <Button
+            text="Mark as Paid"
+            textColor="text-white"
+            bgColor="bg-primary"
+          />
+        </div>
+      </footer>
+    </div>
   )
 }
 

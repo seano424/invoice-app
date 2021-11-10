@@ -1,0 +1,25 @@
+.card {
+  @apply bg-white p-5 rounded-lg shadow-lg my-4;
+}
+
+.cardDetailsTop {
+  @apply flex justify-between items-center mb-4;
+}
+
+.cardDetailsTop p:first-child {
+  @apply font-bold;
+}
+
+.cardDetailsTop p:nth-child(2) {
+  @apply text-gray-400;
+}
+
+.cardDetailsBottom {
+  @apply flex justify-between items-center;
+}
+.cardDetailsBottom p:first-child {
+  @apply text-gray-400 my-2;
+}
+.cardDetailsBottom p:nth-child(2) {
+  @apply font-bold;
+}

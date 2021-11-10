@@ -1,0 +1,7 @@
+.header {
+  @apply text-2xl font-semibold leading-6 text-gray-900  flex flex-col mb-6 overflow-y-auto;
+}
+
+.something {
+  @apply font-bold;
+}

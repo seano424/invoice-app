@@ -1,0 +1,74 @@
+.container {
+  @apply flex flex-col max-h-full w-full;
+}
+
+.main {
+  @apply text-secondary font-light p-6 flex-1 overflow-y-auto;
+}
+
+.status {
+  @apply flex justify-between items-center bg-white p-5 rounded-lg shadow-sm;
+}
+.status p {
+  @apply text-gray-400;
+}
+
+.header {
+  @apply font-bold;
+}
+
+.header span {
+  @apply text-black;
+}
+
+.info {
+  @apply p-5 my-5 bg-white rounded-lg shadow-sm;
+}
+
+.clientDetails {
+  @apply flex justify-between my-10;
+}
+
+.col {
+  @apply flex flex-col justify-between;
+}
+
+.col div h2,
+.col h2 {
+  @apply text-black font-semibold text-xl;
+}
+
+.items {
+  @apply bg-purple-50 bg-opacity-60 p-4 rounded-t-lg;
+}
+
+.itemContainer {
+  @apply flex justify-between items-center my-4;
+}
+
+.itemContainer h3 {
+  @apply text-black font-semibold;
+}
+
+.item h3 {
+  @apply text-black mb-2;
+}
+.item {
+  @apply font-semibold;
+}
+
+.totals {
+  @apply flex items-center justify-between bg-gray-900 rounded-b-lg p-4;
+}
+
+.totals p {
+  @apply text-gray-200;
+}
+
+.totals h1 {
+  @apply text-2xl text-white font-bold;
+}
+
+.footer {
+  @apply flex items-center sticky bottom-[4.5rem] xl:bottom-0 justify-center w-full h-24 bg-white gap-3;
+}

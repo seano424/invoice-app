@@ -17,6 +17,7 @@ import { modalState, errorModalState } from '../atoms/modalAtom'
 import { paidState, pendingState, draftState } from '../atoms/filterAtom'
 import Item from './Item'
 import ErrorModal from './ErrorModal'
+import styles from '@/styles/InvoiceForm.module.css'
 
 function InvoiceForm({ header, invoice, type, identifier }) {
   const [loadingInvoice, setLoadingInvoice] = useState(false)
@@ -147,7 +148,7 @@ function InvoiceForm({ header, invoice, type, identifier }) {
     <>
       <main className="p-6 mb-10">
         <ErrorModal />
-        <h3 className="text-2xl font-semibold leading-6 text-gray-900 dark:text-white flex flex-col mb-6 overflow-y-auto">
+        <h3 className="text-2xl font-semibold leading-6 text-gray-900  flex flex-col mb-6 overflow-y-auto dark:text-white">
           {header}
         </h3>
         <form className="flex flex-col" onSubmit={handleSubmit(onSubmit)}>

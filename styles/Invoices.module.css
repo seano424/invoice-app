@@ -1,0 +1,57 @@
+.main {
+  @apply max-w-full overflow-y-auto scrollbar-hide md:max-w-3xl xl:w-screen mx-auto pt-[4.5rem] h-screen;
+}
+
+.top {
+  @apply flex justify-between space-x-10 my-4;
+}
+.top div h4 {
+  @apply text-xl font-bold;
+}
+.top div p span {
+  @apply hidden sm:inline-block;
+}
+
+.filter {
+  @apply flex items-center space-x-4;
+}
+
+.filterContainer {
+  @apply flex relative items-center space-x-2;
+}
+
+.filterHeader {
+  @apply flex space-x-2 items-center cursor-pointer;
+}
+
+.filterHeader p {
+  @apply font-bold;
+}
+
+.filterHeader p span {
+  @apply hidden sm:inline-flex;
+}
+
+.filterCard {
+  @apply absolute bg-white shadow-lg pl-10 pr-24 py-6 rounded-xl top-12 mt-2 -left-12;
+}
+
+.filterCard div {
+  @apply flex items-center space-x-3;
+}
+
+.button {
+  @apply flex space-x-2 items-center bg-primary p-2 rounded-full cursor-pointer;
+}
+
+.button span:first-child {
+  @apply bg-white  flex items-center justify-center w-8 h-8 rounded-full;
+}
+
+.button span:nth-child(2) {
+  @apply text-white;
+}
+
+.nothingImg {
+  @apply relative h-80 xl:h-[30rem] mt-12 w-full flex;
+}

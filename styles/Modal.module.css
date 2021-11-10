@@ -1,0 +1,35 @@
+.mainDialog {
+  @apply fixed max-w-2xl md:max-w-4xl xl:max-w-3xl top-[4.5rem] xl:top-0 xl:left-[4.5rem] inset-0 z-10;
+}
+
+.dialog {
+  @apply fixed inset-0 z-10 overflow-y-auto;
+}
+
+.overlay {
+  @apply fixed inset-0 bg-black opacity-40;
+}
+
+.mainBody {
+  @apply inline-block w-full overflow-y-scroll h-screen text-left transition-all transform bg-gray-50 shadow-xl;
+}
+
+.mainHeader {
+  @apply text-2xl font-semibold leading-6 text-gray-900 flex flex-col;
+}
+
+.body {
+  @apply inline-block w-full max-w-md p-6 my-8 overflow-hidden text-left align-middle transition-all transform bg-white shadow-xl rounded-2xl;
+}
+
+.cancel {
+  @apply inline-flex justify-center px-4 py-2 text-sm font-medium text-blue-900 bg-blue-50 border border-transparent rounded-3xl hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500;
+}
+
+.delete {
+  @apply inline-flex justify-center px-4 py-2 text-sm font-medium text-white bg-red-500 border border-transparent rounded-3xl hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500;
+}
+
+.error {
+  @apply inline-flex justify-center px-4 py-2 text-sm font-medium text-blue-900 bg-blue-50 border border-transparent rounded-3xl hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500;
+}

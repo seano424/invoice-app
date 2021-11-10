@@ -1,3 +1,4 @@
+import styles from '@/styles/Modal.module.css'
 import { Dialog, Transition } from '@headlessui/react'
 import { Fragment } from 'react'
 import { destroyModalState, modalState } from '../atoms/modalAtom'
@@ -23,11 +24,7 @@ export default function DeleteModal({ invoice, id }) {
   return (
     <>
       <Transition appear show={openDestroy} as={Fragment}>
-        <Dialog
-          as="div"
-          className="fixed inset-0 z-10 overflow-y-auto"
-          onClose={closeModal}
-        >
+        <Dialog as="div" className={styles.dialog} onClose={closeModal}>
           <div className="min-h-screen px-4 text-center">
             <Transition.Child
               as={Fragment}
@@ -38,7 +35,7 @@ export default function DeleteModal({ invoice, id }) {
               leaveFrom="opacity-100"
               leaveTo="opacity-0"
             >
-              <Dialog.Overlay className="fixed inset-0 bg-black opacity-40" />
+              <Dialog.Overlay className={styles.overlay} />
             </Transition.Child>
 
             {/* This element is to trick the browser into centering the modal contents. */}
@@ -57,7 +54,7 @@ export default function DeleteModal({ invoice, id }) {
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <div className="inline-block w-full max-w-md p-6 my-8 overflow-hidden text-left align-middle transition-all transform bg-white shadow-xl rounded-2xl">
+              <div className={styles.body}>
                 <Dialog.Title
                   as="h3"
                   className="text-lg font-semibold leading-6 text-gray-900 tracking-wide "
@@ -74,14 +71,14 @@ export default function DeleteModal({ invoice, id }) {
                 <div className="mt-4 flex space-x-4 justify-end">
                   <button
                     type="button"
-                    className="inline-flex justify-center px-4 py-2 text-sm font-medium text-blue-900 bg-blue-50 border border-transparent rounded-3xl hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500"
+                    className={styles.cancel}
                     onClick={closeModal}
                   >
                     Cancel
                   </button>
                   <button
                     type="button"
-                    className="inline-flex justify-center px-4 py-2 text-sm font-medium text-white bg-red-500 border border-transparent rounded-3xl hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500"
+                    className={styles.delete}
                     onClick={destroyInvoice}
                   >
                     Delete

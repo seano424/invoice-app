@@ -3,6 +3,7 @@ import { modalState, pageState } from '../atoms/modalAtom'
 import InvoicePage from './InvoicePage'
 import StatusCard from './StatusCard'
 import { formatter } from '../lib/helpers'
+import styles from '@/styles/InvoiceCard.module.css'
 
 function Invoice(invoice) {
   const setOpen = useSetRecoilState(modalState)
@@ -18,20 +19,15 @@ function Invoice(invoice) {
 
   return (
     <>
-      <div
-        onClick={handleShow}
-        className="bg-white dark:bg-dark p-5 rounded-lg shadow-lg my-4"
-      >
-        <div className="flex justify-between items-center mb-4">
-          <p className="font-bold">#{id}</p>
-          <p className="text-gray-400">{clientName}</p>
+      <div onClick={handleShow} className={`${styles.card} dark:bg-black`}>
+        <div className={styles.cardDetailsTop}>
+          <p>#{id}</p>
+          <p>{clientName}</p>
         </div>
-        <div className="flex justify-between items-center">
+        <div className={styles.cardDetailsBottom}>
           <div>
-            <p className="text-gray-400 my-2">Due {paymentDue}</p>
-            <p className="font-bold">
-              {typeof total === 'number' ? formatter.format(total) : total}
-            </p>
+            <p>Due {paymentDue}</p>
+            <p>{typeof total === 'number' ? formatter.format(total) : total}</p>
           </div>
           <StatusCard status={status} />
         </div>

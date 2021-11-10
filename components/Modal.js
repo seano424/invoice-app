@@ -3,6 +3,7 @@ import { Fragment } from 'react'
 import { useRecoilState } from 'recoil'
 import { modalState } from '../atoms/modalAtom'
 import { ChevronLeftIcon } from '@heroicons/react/solid'
+import styles from '@/styles/Modal.module.css'
 
 export default function Modal({ header, page }) {
   const [open, setOpen] = useRecoilState(modalState)
@@ -14,11 +15,7 @@ export default function Modal({ header, page }) {
   return (
     <div>
       <Transition appear show={open} as={Fragment}>
-        <Dialog
-          as="div"
-          className="fixed max-w-2xl md:max-w-4xl xl:max-w-3xl top-[4.5rem] xl:top-0 xl:left-[4.5rem] inset-0 z-10 "
-          onClose={closeModal}
-        >
+        <Dialog as="div" className={styles.mainDialog} onClose={closeModal}>
           <div className="min-h-screen">
             <Transition.Child
               as={Fragment}
@@ -45,7 +42,7 @@ export default function Modal({ header, page }) {
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <div className="inline-block w-full overflow-y-scroll h-screen text-left transition-all transform bg-gray-50 dark:bg-gray-900 shadow-xl">
+              <div className={`${styles.mainBody} dark:bg-gray-900 `}>
                 <div
                   onClick={closeModal}
                   className="px-4 pt-4 cursor-pointer flex items-center space-x-4"
@@ -54,10 +51,7 @@ export default function Modal({ header, page }) {
                   <ChevronLeftIcon className="h-4 w-4 text-primary" />
                   <h4 className="font-bold text-xs">Go back</h4>
                 </div>
-                <Dialog.Title
-                  as="h3"
-                  className="text-2xl font-semibold leading-6 text-gray-900 flex flex-col"
-                >
+                <Dialog.Title as="h3" className={styles.mainHeader}>
                   {header}
                 </Dialog.Title>
                 <div>{page}</div>

@@ -2,6 +2,7 @@ import { Dialog, Transition } from '@headlessui/react'
 import { Fragment } from 'react'
 import { errorModalState } from '../atoms/modalAtom'
 import { useRecoilState } from 'recoil'
+import styles from '@/styles/Modal.module.css'
 
 export default function ErrorModal({ invoice, id }) {
   const [openError, setOpenError] = useRecoilState(errorModalState)
@@ -13,11 +14,7 @@ export default function ErrorModal({ invoice, id }) {
   return (
     <>
       <Transition appear show={openError} as={Fragment}>
-        <Dialog
-          as="div"
-          className="fixed inset-0 z-10 overflow-y-auto"
-          onClose={closeModal}
-        >
+        <Dialog as="div" className={styles.dialog} onClose={closeModal}>
           <div className="min-h-screen px-4 text-center">
             <Transition.Child
               as={Fragment}
@@ -63,7 +60,7 @@ export default function ErrorModal({ invoice, id }) {
                 <div className="mt-4">
                   <button
                     type="button"
-                    className="inline-flex justify-center px-4 py-2 text-sm font-medium text-blue-900 bg-blue-50 border border-transparent rounded-3xl hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500"
+                    className={styles.error}
                     onClick={closeModal}
                   >
                     Got it!
